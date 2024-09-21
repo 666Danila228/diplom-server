@@ -33,6 +33,9 @@ model User {
   // Емайл
   email String @unique
 
+  // "Мягкое" удаление
+  isDeleted       Boolean @default(false)
+
   // Токен
   refresh_token            String?
   refresh_token_expires_at DateTime?

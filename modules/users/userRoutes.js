@@ -2,7 +2,7 @@
 // ||                 Импорты                      ||
 // ==================================================
 import express from 'express';
-import { registerUser } from './userController.js';
+import { registerUser, loginUser } from './userController.js';
 
 // ==================================================
 // ||                 Константы                    ||
@@ -13,7 +13,6 @@ const router = express.Router();
 router.post('/register', registerUser);
 
 // Пост запрос авторизации пользователя
-router.post('/register', (req, res) => {
-});
+router.post('/login', loginUser);
 
 export default router;

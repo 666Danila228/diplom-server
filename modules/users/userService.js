@@ -67,6 +67,10 @@ class UserService {
         }
     }
 
+// ==================================================
+// ||                   Токен                      ||
+// ==================================================
+
     // Функция для генерация токена которая получает объёкт user в качестве аргумента
     generateToken(user) {
         // 
@@ -87,7 +91,7 @@ class UserService {
     }
 
     async generateRefreshToken(user) {
-        const refreshToken = jwt.sign({}, process.env.JWT_SECRET, {
+        const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
             expiresIn: '7d',
         }); 
 
@@ -114,6 +118,40 @@ class UserService {
                 refresh_token_expires_at: null,
             },
         });
+    }
+
+
+    async loginUser(email, password) {
+        try {
+            
+            // Поиск пользователей по email и проверка на "мягкое" удаление
+            const existingUser = await prisma.user.findUnique({
+                where: { 
+                    email: email,
+                    isDeleted: false,
+                },
+            });
+
+            // Проверка существует данный пользователь или нет
+            if(!existingUser) {
+                throw new Error("Неверная почта или пароль");
+            }
+            
+            // Првоеряем полученный пароль с хэшированным паролем в бд
+            const isValidPass = await bcrypt.compare(password, existingUser.password);
+            if(!isValidPass) {
+                throw new Error("Невераня почта или пароль"); 
+            }
+
+            const token = this.generateToken(existingUser);
+
+            const refreshToken = await this.generateRefreshToken(existingUser);
+
+            return { token, refreshToken};
+        } catch (error) {
+            console.error(error);
+            throw new Error("Ошибка при авторизации");
+        }
     }
 }
 
