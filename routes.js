@@ -2,7 +2,8 @@
 // ||                 Импорты                      ||
 // ==================================================
 import express from 'express';
-import userRoutes from './modules/users/userRoutes.js';
+import authRoutes from "./modules/auth/authRoutes.js";
+import { authLimit } from './utils/rateLimit.js';
 
 
 // ==================================================
@@ -10,6 +11,6 @@ import userRoutes from './modules/users/userRoutes.js';
 // ==================================================
 const router = express.Router();
 
-router.use('/users', userRoutes);
+router.use('/auth', authLimit, authRoutes);
 
 export default router;
