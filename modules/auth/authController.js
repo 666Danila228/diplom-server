@@ -3,7 +3,7 @@
 // ==================================================
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import AuhService from './authService.js'
+import AuthService from './authService.js'
 
 // Регистрация
 export const registerUser = async (req, res) => {
@@ -14,15 +14,15 @@ export const registerUser = async (req, res) => {
     try {
 
         // Создание нового пользователя
-        const newUser = await AuhService.createUser(email, password, surname, name, patronymic);
+        const newUser = await AuthService.createUser(email, password, surname, name, patronymic);
 
         // Генерация jwt токена
-        const token = AuhService.generateToken(newUser);
-
+        const token = AuthService.generateToken(newUser);
         // Генерация refresh токена
-        const refreshToken = await AuhService.generateRefreshToken(newUser);
+        const refreshToken = await AuthService.generateRefreshToken(newUser);
 
-        res.status(201).json({ token, refreshToken });
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
+        res.status(201).json({ message: 'Успешаня регистрация', token });
 
     } catch (error) {
         if (error.message === "Пользователь уже существует") {
@@ -40,10 +40,26 @@ export const loginUser = async (req, res) => {
     const { email, password } = req.body;
     try {
         // Проверка данных и получение токена и рефрештокена
-        const { token, refreshToken } = await AuhService.loginUser( email, password );
-        res.json({ token, refreshToken });
+        const { token, refreshToken } = await AuthService.loginUser( email, password );
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
+        res.json({ message: 'Авторизация успешна', token });
     } catch (error) {
         res.status(401).json({ error: error.message });
+    }
+}
+
+export const refreshToken = async (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+        return res.status(401).json({ error: "Рефреш токен не найден" });
+    }
+
+    try {
+        const newToken = await AuthService.refreshToken(refreshToken);
+        res.json({ token: newToken });
+    } catch (error) {
+        res.status(401).json({ error: error.message })
     }
 }
 
@@ -51,7 +67,8 @@ export const loginUser = async (req, res) => {
 export const logoutUser = async (req, res) => {
     const userId = req.body.userId;
     try {
-        await AuhService.logoutUser(userId);
+        await AuthService.logoutUser(userId);
+        res.clearCookie('refreshToken');
         res.status(200).json({ message: "Успешный выход" });
     } catch (error) {
         console.error(error);

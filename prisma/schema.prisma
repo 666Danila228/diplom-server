@@ -27,14 +27,14 @@ model User {
   role_id Int  @default(2)
 
   // Пароль
-  password           String
-  updatedPassword_at DateTime?
+  password            String
+  updated_password_at DateTime?
 
   // Емайл
   email String @unique
 
   // "Мягкое" удаление
-  isDeleted       Boolean @default(false)
+  is_deleted Boolean @default(false)
 
   // Токен
   refresh_token            String?
@@ -45,7 +45,11 @@ model User {
   last_login_at DateTime?
 
   // Время создания
-  created_at DateTime @default(now())
+  created_at DateTime @default(now()) @db.Timestamptz(0)
+  updated_at DateTime @updatedAt @db.Timestamptz(0)
+
+  UserCategories UserCategories[]
+  Garage         Garage[]
 }
 
 // Таблица с ролями
@@ -55,4 +59,279 @@ model Role {
   name String
 
   users User[]
+}
+
+// Таблица с категориями управления на транспорт
+model DrivingCategory {
+  id   Int    @id @default(autoincrement())
+  // Название категории
+  name String @unique
+
+  UserCategorires UserCategories[]
+  Car             Car[]
+}
+
+// Таблица для привязки категорий управления водителям
+model UserCategories {
+  id                  Int @id @default(autoincrement())
+  user_id             Int
+  driving_category_id Int
+
+  User            User            @relation(fields: [user_id], references: [id])
+  DrivingCategory DrivingCategory @relation(fields: [driving_category_id], references: [id])
+}
+
+model BrandCar {
+  id   Int    @id @default(autoincrement())
+  // Название производителя
+  name String @unique
+
+  ModelCar ModelCar[]
+}
+
+model ModelCar {
+  id       Int    @id @default(autoincrement())
+  brand_id Int
+  name     String @unique
+
+  Car      Car[]
+  BrandCar BrandCar @relation(fields: [brand_id], references: [id])
+}
+
+model TypeCar {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  interval_to Int
+
+  Car Car[]
+}
+
+// Гараж
+model Garage {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  head_column Int
+
+  HeadColumn User      @relation(fields: [head_column], references: [id])
+  Car        Car[]
+  Tire       Tire[]
+  Battery    Battery[]
+}
+
+model GarageMoveCar {
+  id          Int      @id @default(autoincrement())
+  car_id      Int
+  garage_id   Int
+  garage_room Int
+  date_move   DateTime @default(now()) @db.Timestamptz(0)
+
+  Car Car @relation(fields: [car_id], references: [id])
+}
+
+model BrandTire {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  ModelTire ModelTire[]
+}
+
+model ModelTire {
+  id       Int    @id @default(autoincrement())
+  brand_id Int
+  name     String @unique
+
+  BrandTire BrandTire @relation(fields: [brand_id], references: [id])
+  Tire      Tire[]
+}
+
+// Шины
+model Tire {
+  id                Int      @id @default(autoincrement())
+  model_id          Int
+  size              String
+  estimated_mileage Int
+  remaining_mileage Int
+  garage_id         Int
+  created_at        DateTime @default(now()) @db.Timestamptz(0)
+
+  Garage      Garage        @relation(fields: [garage_id], references: [id])
+  ModelTire   ModelTire     @relation(fields: [model_id], references: [id])
+  TireHistory TireHistory[]
+}
+
+enum TireBatteryAction {
+  INSTALL
+  REMOVE
+}
+
+model TireHistory {
+  id            Int               @id @default(autoincrement())
+  tire_id       Int
+  car_id        Int
+  action        TireBatteryAction
+  is_spare_tire Boolean           @default(false)
+  created_at    DateTime          @db.Timestamptz(0)
+
+  Tire Tire @relation(fields: [tire_id], references: [id])
+  Car  Car  @relation(fields: [car_id], references: [id])
+}
+
+model BrandBattery {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  ModelBattery ModelBattery[]
+}
+
+model ModelBattery {
+  id       Int    @id @default(autoincrement())
+  brand_id Int
+  name     String  @unique
+
+  BrandBattery BrandBattery @relation(fields: [brand_id], references: [id])
+  Battery      Battery[]
+}
+
+enum BatteryPolarity {
+  DIRECT
+  REVERSE
+}
+
+model Battery {
+  id        Int             @id @default(autoincrement())
+  model_id  Int
+  polarity  BatteryPolarity
+  capacity  Int
+  power     Float
+  garage_id Int
+
+  Garage         Garage           @relation(fields: [garage_id], references: [id])
+  ModelBattery   ModelBattery     @relation(fields: [model_id], references: [id])
+  BatteryHistory BatteryHistory[]
+}
+
+model BatteryHistory {
+  id         Int               @id @default(autoincrement())
+  battery_id Int
+  car_id     Int
+  action     TireBatteryAction
+  created_at DateTime          @db.Timestamptz(0)
+
+  Battery Battery @relation(fields: [battery_id], references: [id])
+  Car     Car     @relation(fields: [car_id], references: [id])
+}
+
+model Service {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  address     String
+  phone       String
+  description String?
+
+  Car           Car[]
+  TOHistory     TOHistory[]
+  RepairHistory RepairHistory[]
+}
+
+enum FuelType {
+  PETROL
+  DIESEL
+  ELECTRIC
+  HYBRID
+}
+
+enum PeriodType {
+  DAILY
+  MONTHLY
+}
+
+enum TransmissionType {
+  MECHANICAL
+  AUTOMATIC
+  STEPLESS
+  ROBOTIC
+}
+
+enum DriveType {
+  FRONT
+  REAR
+  ALL
+}
+
+// Таблица машины
+model Car {
+  id                  Int              @id @default(autoincrement())
+  model_car_id        Int
+  year_of_realise     DateTime         @db.Timestamptz(0)
+  type_car_id         Int
+  color               String
+  horse_power         Float
+  kilowatt_hour       Float
+  passport_number     String
+  fuel_type           FuelType
+  engine_capacity     Float
+  transmission_type   TransmissionType
+  driving_category_id Int
+  driveType           DriveType
+  mileage             Float
+  garage_id           Int?
+  photo               String
+  service_id          Int?
+  vin_body            String @unique
+  vin_engine          String @unique
+
+  Service         Service?        @relation(fields: [service_id], references: [id])
+  Garage          Garage?         @relation(fields: [garage_id], references: [id])
+  TypeCar         TypeCar         @relation(fields: [type_car_id], references: [id])
+  ModelCar        ModelCar        @relation(fields: [model_car_id], references: [id])
+  DrivingCategory DrivingCategory @relation(fields: [driving_category_id], references: [id])
+
+  GarageMoveCar  GarageMoveCar[]
+  TireHistory    TireHistory[]
+  BatteryHistory BatteryHistory[]
+  FuelCard       FuelCard[]
+  TOHistory      TOHistory[]
+  RepairHistory  RepairHistory[]
+}
+
+model FuelCard {
+  id     Int      @id @default(autoincrement())
+  car_id Int
+  period DateTime @db.Timestamptz(0)
+
+  Car              Car                @relation(fields: [car_id], references: [id])
+  FuelCardFuelType FuelCardFuelType[]
+}
+
+model FuelCardFuelType {
+  id           Int        @id @default(autoincrement())
+  fuel_card_id Int
+  fuel_type    FuelType
+  fuel_amount  Int
+  period_type  PeriodType
+
+  FuelCard FuelCard @relation(fields: [fuel_card_id], references: [id])
+}
+
+model TOHistory {
+  id          Int      @id @default(autoincrement())
+  car_id      Int
+  date        DateTime @db.Timestamptz(0)
+  service_id  Int
+  description String
+
+  Car     Car     @relation(fields: [car_id], references: [id])
+  Service Service @relation(fields: [service_id], references: [id])
+}
+
+model RepairHistory {
+  id          Int      @id @default(autoincrement())
+  car_id      Int
+  startDate   DateTime @db.Timestamptz(0)
+  endDate     DateTime @db.Timestamptz(0)
+  description String
+  service_id  Int
+
+  Car     Car     @relation(fields: [car_id], references: [id])
+  Service Service @relation(fields: [service_id], references: [id])
 }

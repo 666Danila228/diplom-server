@@ -2,7 +2,7 @@
 // ||                 Импорты                      ||
 // ==================================================
 import express from 'express';
-import { registerUser, loginUser, logoutUser } from './authController.js';
+import { registerUser, loginUser, logoutUser, refreshToken } from './authController.js';
 import checkAuthMiddleware from '../../utils/checkAuthMiddleware.js';
 
 // ==================================================
@@ -15,6 +15,8 @@ router.post('/register', registerUser);
 
 // Пост запрос авторизации пользователя
 router.post('/login', loginUser);
+
+router.post('/refresh-token', refreshToken);
 
 // Пост запрос выхода из системы
 router.post('/logout', checkAuthMiddleware, logoutUser);

@@ -2,10 +2,11 @@
 // ||                 Импорты                      ||
 // ==================================================
 import prisma from "../../prisma/prismaClient.js";
-import bcrypt, { compare } from "bcrypt";
+import bcrypt from "bcrypt";
+import { use } from "bcrypt/promises.js";
 import jwt from "jsonwebtoken";
 
-class AuhService {
+class AuthService {
     // Регистрация пользователя
     async createUser(email, password, surname, name, patronymic) {
         try {
@@ -51,7 +52,7 @@ class AuhService {
             const existingUser = await prisma.user.findUnique({
                 where: { 
                     email: email,
-                    isDeleted: false,
+                    is_deleted: false,
                 },
             });
 
@@ -102,6 +103,7 @@ class AuhService {
 // ||                   Токен                      ||
 // ==================================================
 
+    // Напиши кто что делает
     // Функция для генерация токена которая получает объёкт user в качестве аргумента
     generateToken(user) {
         // Данные хранящиеся в токене
@@ -121,6 +123,7 @@ class AuhService {
         return jwt.sign(payload, process.env.JWT_SECRET, options)
     }
 
+    // Напиши кто что делает
     // Функциия для генерации рефрештокена
     async generateRefreshToken(user) {
         const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
@@ -142,6 +145,28 @@ class AuhService {
         return refreshToken;
     }
 
+    // Напиши кто что делает
+    // Функция для обновления токена
+    async refreshToken(refreshToken) {
+        try {
+            const decode = jwt.verify(refreshToken, process.env.JWT_SECRET);
+            const user = await prisma.user.findUnique({
+                where: { id: decode.userId },
+            });
+
+            if (!user || user.refresh_token !== refreshToken) {
+                throw new Error("Недействительный рефреш токен");
+            }
+
+            const newToken = this.generateToken(user);
+            return newToken;
+        } catch (error) {
+            console.error(error);
+            throw new Error("Ошибка при обновлении токена");
+        }
+    }
+
+    // Напиши кто что делает
     // Функция для отзывания рефрештокена
     async revokeTokens(userId) {
         await prisma.user.update({
@@ -155,4 +180,4 @@ class AuhService {
     }
 }
 
-export default new AuhService();
+export default new AuthService();
