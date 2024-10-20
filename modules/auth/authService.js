@@ -10,20 +10,9 @@ class AuthService {
     // Регистрация пользователя
     async createUser(email, password, surname, name, patronymic) {
         try {
-
-            // Поиск пользователей по email
-            const existingUser = await prisma.user.findUnique({
-                where: { email },
-            });
-
-            // Проверка если пользователь с данным email уже существует то регистрация не идёт дальше
-            if (existingUser) {
-                throw new Error("Пользователь уже существует");
-            }
-
             // Хеширование пароля
             const hashedPassword = await bcrypt.hash(password, 10);
-
+    
             // Создание нового пользователя
             const newUser = await prisma.user.create({
                 data: {
@@ -34,11 +23,10 @@ class AuthService {
                     email,
                 },
             });
-
+    
             // Возвращение данных нового пользователя
             return newUser;
         } catch (error) {
-            // Вывод ошибок
             console.error(error);
             throw new Error("Ошибка при создании пользователя");
         }
@@ -47,10 +35,10 @@ class AuthService {
     //Авторизация   
     async loginUser(email, password) {
         try {
-            
+
             // Поиск пользователей по email и проверка на "мягкое" удаление
             const existingUser = await prisma.user.findUnique({
-                where: { 
+                where: {
                     email: email,
                     is_deleted: false,
                 },
@@ -58,13 +46,13 @@ class AuthService {
 
             // Проверка существует данный пользователь или нет
             if (!existingUser) {
-                throw new Error("Неверная почта или пароль");
+                throw new Error("Данного пользователя не существует");
             }
-            
+
             // Првоеряем полученный пароль с хэшированным паролем в бд
             const isValidPass = await bcrypt.compare(password, existingUser.password);
             if (!isValidPass) {
-                throw new Error("Невераня почта или пароль"); 
+                throw new Error("Невераня почта или пароль");
             }
 
             // Создание токена
@@ -74,10 +62,10 @@ class AuthService {
             const refreshToken = await this.generateRefreshToken(existingUser);
 
             // Возвращение токена и рефрештокена
-            return { token, refreshToken};
+            return { token, refreshToken };
         } catch (error) {
             console.error(error);
-            throw new Error("Ошибка при авторизации");
+            throw error;
         }
     }
 
@@ -99,9 +87,9 @@ class AuthService {
         }
     }
 
-// ==================================================
-// ||                   Токен                      ||
-// ==================================================
+    // ==================================================
+    // ||                   Токен                      ||
+    // ==================================================
 
     // Напиши кто что делает
     // Функция для генерация токена которая получает объёкт user в качестве аргумента
@@ -128,7 +116,7 @@ class AuthService {
     async generateRefreshToken(user) {
         const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
             expiresIn: '7d',
-        }); 
+        });
 
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + 7);
