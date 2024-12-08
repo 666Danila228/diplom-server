@@ -1,12 +1,13 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import AuthService from './authService.js';
-import { registerSchema, loginSchema } from '../../validations/index.js';
+import { registerSchema, loginSchema } from '../../validations/auth/index.js';
 import { handleValidationError } from "../../validations/errorHandler.js";
 import prisma from "../../prisma/prismaClient.js";
 
 // Проверка на то занят email или нет
 const checkEmailExists = async (email) => {
+
     const existingUser = await prisma.user.findUnique({
         where: { email },
     });
@@ -22,9 +23,6 @@ export const registerUser = async (req, res) => {
     try {
         // Выполняем синхронную валидацию с `abortEarly: false`, чтобы собрать все ошибки
         const value = await registerSchema.validateAsync(req.body, { abortEarly: false });
-
-        // Если нет синхронных ошибок, проверяем email асинхронно
-        await checkEmailExists(value.email);
 
         // Если все проверки успешны, продолжаем регистрацию
         const { email, password, surname, name, patronymic } = value;

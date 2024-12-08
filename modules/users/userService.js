@@ -47,11 +47,15 @@ class UserService {
                 if (key === 'password'){
                     const hashedPassword = bcrypt.hashSync(updatedData[key], 10);
                     dataToUpdate[key] = hashedPassword;
-                    dataToUpdate.updatedPassword_at = new Date(Date.now() + 3 * 60 * 60 * 1000);
+                    dataToUpdate.updated_password_at = new Date(Date.now() + 3 * 60 * 60 * 1000);
                 } else if (updatedData[key] !== user[key]) {
                     dataToUpdate[key] = updatedData[key];
                 }
             });
+
+            if (Object.keys(dataToUpdate).length === 0) {
+                throw new Error("Нет изменений в данных");
+            }
 
             await prisma.user.update({
                 where: { id: userId },
