@@ -6,8 +6,11 @@ export const checkRecordExists = async (entity, model, field, value, shouldExist
         throw new Error(`Model ${model} does not exist`);
     }
 
+    console.log(field, value)
+    const parsedValue = field === 'id' ? parseInt(value) : value;
+
     const existingRecord = await prisma[model].findUnique({
-        where: { [field]: value },
+        where: { [field]: parsedValue },
     });
 
     if (shouldExist && !existingRecord) {

@@ -1,6 +1,5 @@
 import EngineerService from './engineerService.js';
 import prisma from '../../prisma/prismaClient.js';
-import Schemas from '../../validations/engineer/index.js';
 import { handleValidationError } from "../../validations/errorHandler.js";
 
 class EngineerController {
@@ -32,6 +31,24 @@ class EngineerController {
             const brandTires = await  EngineerService.getAllBrandTires();
             res.status(200).json({message: 'Список брендов шин: ', brandTires});
         } catch (error) {
+            console.error(error);
+            res.status(400).json({ message: error.message });
+        }
+    }
+
+    async updateBrandTire(req, res) {
+        try {
+            const { id } = req.params;
+            const { name } = req.body
+        } catch (error) {
+            const errors = {};
+    
+            if (error.isJoi) {
+                Object.assign(errors, handleValidationError(error));
+    
+                return res.status(400).json({ errors });
+            }
+                  
             console.error(error);
             res.status(400).json({ message: error.message });
         }
