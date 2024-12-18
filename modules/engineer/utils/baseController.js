@@ -62,6 +62,28 @@ class BaseController {
             res.status(error.status || 400).json({ message: error.message });
         }
     }
+
+    async deleteRecord(req, res, serviceMethod, entityName) {
+        try {
+            const { id } = req.params; 
+            const result = await serviceMethod(id); 
+            res.status(200).json({ message: `${entityName} успешно удален`, result });
+        } catch (error) {
+            console.error(error);
+            res.status(error.status || 500).json({ message: error.message });
+        }
+    }
+
+    async deleteManyRecords(req, res, serviceMethod, entityName) {
+        try {
+            const { ids } = req.body; 
+            const result = await serviceMethod(ids); 
+            res.status(200).json({ message: `${entityName} успешно удалены`, result });
+        } catch (error) {
+            console.error(error);
+            res.status(error.status || 500).json({ message: error.message });
+        }
+    }
 }
 
 export default BaseController;

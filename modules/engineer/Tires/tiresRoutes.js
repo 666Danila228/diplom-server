@@ -5,19 +5,28 @@ import TireController from "./tiresController.js";
 
 const router = express.Router();
 
-router.post('/brandTire', checkAuthMiddleware, TireController.createBrandTire);
-router.get('/brandTires', checkAuthMiddleware, TireController.getAllBrandTires);
-router.get('/brandTire/:id', checkAuthMiddleware, TireController.getBrandTireById);
-router.put('/brandTire/:id', checkAuthMiddleware, TireController.updateBrandTire);
+router.post('/brandTire', TireController.createBrandTire);
+router.get('/brandTires', TireController.getAllBrandTires);
+router.get('/brandTire/:id', TireController.getBrandTireById);
+router.put('/brandTire/:id', TireController.updateBrandTire);
+router.delete('/brandTire/:id', TireController.deleteBrandTire);
+router.delete('/brandTires/delete-many', TireController.deleteManyBrandTires);
 
-router.post('/modelTire', checkAuthMiddleware, TireController.createModelTire);
-router.get('/modelTires', checkAuthMiddleware, TireController.getAllModelTires);
-router.get('/modelTire/:id', checkAuthMiddleware, TireController.getModelTireById);
-router.put('/modelTire/:id', checkAuthMiddleware, TireController.updateModelTire);
+// Роуты для ModelTire
+router.post('/modelTire', TireController.createModelTire);
+router.get('/modelTires', TireController.getAllModelTires);
+router.get('/modelTire/:id', TireController.getModelTireById);
+router.put('/modelTire/:id', TireController.updateModelTire);
+router.delete('/modelTire/:id', TireController.deleteModelTire);
+router.delete('/modelTires/delete-many', TireController.deleteManyModelTires);
 
-router.post('/tire', checkAuthMiddleware, TireController.createTire);
-router.get('/tires', checkAuthMiddleware, TireController.getAllTires);
-router.get('/tire/:id', checkAuthMiddleware, TireController.getTireByid);
-router.put('/tire/:id', checkAuthMiddleware, TireController.updateTire);
+// Роуты для Tire
+router.post('/tire', TireController.createTire);
+router.get('/tires', TireController.getAllTires);
+router.get('/tire/:id', TireController.getTireByid);
+router.put('/tire/:id', TireController.updateTire);
+router.delete('/tire/:id', TireController.deleteTire);
+router.delete('/tires/delete-many', TireController.deleteManyTires);
+
 
 export default router;

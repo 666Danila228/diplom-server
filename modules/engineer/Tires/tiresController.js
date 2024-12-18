@@ -34,6 +34,24 @@ class TireController extends BaseController {
         );
     }
 
+    async deleteBrandTire(req, res) {
+        const { id } = req.params;
+        await super.deleteRecord(
+            req, res,
+            () => TiresService.deleteBrandTire(id),
+            'Бренд шин'
+        );
+    }
+
+    async deleteManyBrandTires(req, res) {
+        const { ids } = req.body;
+        await super.deleteManyRecords(
+            req, res,
+            () => TiresService.deleteManyBrandTires(ids),
+            'Бренды шин'
+        );
+    }
+
     // Модель шин
     async createModelTire(req, res) {
         await super.createRecord(
@@ -65,6 +83,24 @@ class TireController extends BaseController {
         )
     }
 
+    async deleteModelTire(req, res) {
+        const { id } = req.params;
+        await super.deleteRecord(
+            req, res,
+            () => TiresService.deleteModelTire(id),
+            'Модель шин'
+        );
+    }
+
+    async deleteManyModelTires(req, res) {
+        const { ids } = req.body;
+        await super.deleteManyRecords(
+            req, res,
+            () => TiresService.deleteManyModelTires(ids),
+            'Модели шин'
+        );
+    }
+
     // Шина
     async createTire(req, res) {
         await super.createRecord(
@@ -94,6 +130,24 @@ class TireController extends BaseController {
             'шина',
             Schemas.updateTire
         )
+    }
+
+    async deleteTire(req, res) {
+        const { id } = req.params;
+        await super.deleteRecord(
+            req, res,
+            () => TiresService.deleteTire(id),
+            'Шина'
+        );
+    }
+
+    async deleteManyTires(req, res) {
+        const { ids } = req.body;
+        await super.deleteManyRecords(
+            req, res,
+            () => TiresService.deleteManyTires(ids),
+            'Шины'
+        );
     }
 }
 

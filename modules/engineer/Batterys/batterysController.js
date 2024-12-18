@@ -43,6 +43,8 @@ class BatteryController extends BaseController {
             Schemas
         ) 
     }
+
+    
 }
 
 export default new BatteryController();
