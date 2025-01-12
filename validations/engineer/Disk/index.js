@@ -1,20 +1,20 @@
-import Joi from 'joi';
-import { checkRecordExists } from '../../../utils/checkRecordExists.js';
+import Joi from "joi";
+import { checkRecordExists } from "../../../utils/checkRecordExists.js";
 
-const checkBrandTireExists = async (name) => {
-    await checkRecordExists('бренда шин', 'brandTire', 'name', name, false);
+const checkBrandDiskExists = async (name) => {
+    await checkRecordExists('бренда дисков', 'brandDisk', 'name', name, false);
 };
 
 const checkBrandIdExists = async (brand_id) => {
-    await checkRecordExists('бренд шин', 'brandTire', 'id', brand_id, true)
+    await checkRecordExists('бренд дисков', 'brandDisk', 'id', brand_id, true)
 }
 
-const checkModelTireExists = async (name) => {
+const checkModelDiskExists = async (name) => {
     if (!name) {
         return;
     }
 
-    await checkRecordExists('модели шин', 'modelTire', 'name', name, false);
+    await checkRecordExists('модели дисков', 'modelDisk', 'name', name, false);
 }
 
 const checkModelIdExists = async (model_id) => {
@@ -24,7 +24,7 @@ const checkModelIdExists = async (model_id) => {
     await checkRecordExists('модели шин', 'modelTire', 'id', model_id, true);
 }
 
-const checkTireIdExists = async (tire_id) => {
+const checkDiskIdExists = async (tire_id) => {
     if (!tire_id) {
         return;
     }
@@ -32,16 +32,16 @@ const checkTireIdExists = async (tire_id) => {
     await checkRecordExists('шина', 'tire', 'id', tire_id, true);
 }
 
-const checkGarageIdExists = async (garage_id) => {
+const checkGarageIdExsists = async (garage_id) => {
     if (!garage_id) {
         return;
     }
-    await checkRecordExists('гарж айди', 'garage', 'id', garage_id, true);
+    await checkRecordExists('гараж', 'garage', 'id', garage_id, true);
 }
 
 const Schemas = {
-    createBrandTireSchema: Joi.object({
-        name: Joi.string().min(3).max(25).pattern(new RegExp('^[a-zA-Z0-9]{1,30}$')).required().external(checkBrandTireExists).messages({
+    createBrandDisk: Joi.object({
+        name: Joi.string().min(3).max(25).pattern(new RegExp('^[a-zA-Z0-9]{1,30}$')).required().external(checkBrandDiskExists).messages({
             'string.base': 'Название бренда должна быть строкой',
             'string.empty': 'Название бренда не может быть пустым',
             'string.min': 'Название бренда должна быть не менее {#limit} сиволов',
@@ -51,12 +51,12 @@ const Schemas = {
         }),
     }),
 
-    updateBrandTire: Joi.object({
+    updateBrandDisk: Joi.object({
         id: Joi.number().required().external(checkBrandIdExists).messages({
             'number.base': 'brand_id должен быть числовым',
             'any.required': 'brand_id обязателен'
         }),
-        name: Joi.string().min(3).max(25).pattern(new RegExp('^[a-zA-Z0-9]{1,30}$')).required().external(checkBrandTireExists).messages({
+        name: Joi.string().min(3).max(25).pattern(new RegExp('^[a-zA-Z0-9]{1,30}$')).required().external(checkBrandDiskExists).messages({
             'string.base': 'Название бренда должна быть строкой',
             'string.empty': 'Название бренда не может быть пустым',
             'string.min': 'Название бренда должна быть не менее {#limit} сиволов',
@@ -66,12 +66,12 @@ const Schemas = {
         }),
     }),
 
-    createModelTire: Joi.object({
+    createModelDisk: Joi.object({
         brand_id: Joi.number().required().external(checkBrandIdExists).messages({
             'number.base': 'brand_id должен быть числовым',
             'any.required': 'brand_id обязателен'
         }),
-        name: Joi.string().min(3).max(25).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required().external(checkModelTireExists).messages({
+        name: Joi.string().min(3).max(25).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required().external(checkModelDiskExists).messages({
             'string.base': 'Название модели должно быть строкой',
             'string.empty': 'Название модели не может быть пустым',
             'string.min': 'Название модели должно быть не менее {#limit} символов',
@@ -81,7 +81,7 @@ const Schemas = {
         })
     }),
 
-    updateModelTireSchema: Joi.object({
+    updateModelDiskSchema: Joi.object({
         id: Joi.number().required().external(checkModelIdExists).messages({
             'number.base': 'id должен быть числовым',
             'any.required': 'id обязателен'
@@ -89,7 +89,7 @@ const Schemas = {
         brand_id: Joi.number().external(checkBrandIdExists).messages({
             'number.base': 'brand_id должен быть числовым',
         }),
-        name: Joi.string().min(3).max(25).pattern(new RegExp('^[a-zA-Z0-9]{1,30}$')).external(checkBrandTireExists).messages({
+        name: Joi.string().min(3).max(25).pattern(new RegExp('^[a-zA-Z0-9]{1,30}$')).external(checkModelDiskExists).messages({
             'string.base': 'Название бренда должна быть строкой',
             'string.empty': 'Название бренда не может быть пустым',
             'string.min': 'Название бренда должна быть не менее {#limit} сиволов',
@@ -98,10 +98,10 @@ const Schemas = {
         }).optional(),
     }),
 
-    createTire: Joi.object({
+    createDisk: Joi.object({
         model_id: Joi.number().required().external(checkModelIdExists).messages({
-            'number.base': 'model_id должно быть числом',
-            'any.required': 'model_id обязателен'
+            'number.base': 'id должен быть числовым',
+            'any.required': 'id обязателен'
         }),
         size: Joi.string().min(9).max(15).pattern(new RegExp('^\\d{3}/\\d{2}R\\d{2}$')).required().messages({
             'string.base': 'Размер должен быть сторокй',
@@ -111,17 +111,15 @@ const Schemas = {
             'string.pattern.base': 'Размер должен соответсвовать формату XXX/XXRXX',
             'any.required': 'Размер обязателен'
         }),
-        estimated_mileage: Joi.number().min(0).required().messages({
-            'number.base': 'Примерный пробег должен быть числом',
-            'any.required': 'Примерный пробег обязателен'
+        material: Joi.string().min(2).max(25).messages({
+            'string.base': 'Название материала должна быть строкой',
+            'string.empty': 'Название материала не может быть пустым',
+            'string.min': 'Название материала должна быть не менее {#limit} сиволов',
+            'string.max': 'Название материала должна быть не больше {#limit} сиволов',
         }),
-        remaining_mileage: Joi.number().min(0).required().messages({
-            'number.base': 'Факический пробег должен быть числом',
-            'any.required': 'Факический пробег обязателен'
-        }),
-        garage_id: Joi.number().required().external(checkGarageIdExists).messages({
-            'number.base': 'Гаражный номер должен быть числом',
-            'any.required': 'Гаражный номер обязателен'
+        garage_id: Joi.number().required().external(checkGarageIdExsists).messages({
+            'number.base': 'garage_id должен быть числовым',
+            'any.required': 'garege_id обязателен'
         }),
         serial_number: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,12}$')).required().messages({
             'string.base': 'Серийный номер должен быть строкой',
@@ -131,37 +129,42 @@ const Schemas = {
         })
     }),
 
-    updateTire: Joi.object({
-        id: Joi.number().required().external(checkTireIdExists).messages({
+    updateDisk: Joi.object({
+        id: Joi.number().required().external(checkDiskIdExists).messages({
             'number.base': 'brand_id должен быть числовым',
             'any.required': 'brand_id обязателен'
         }),
-        model_id: Joi.number().external(checkModelIdExists).messages({
-            'number.base': 'model_id должно быть числом',
-            'any.required': 'model_id обязателен'
+        model_id: Joi.number().required().external(checkModelIdExists).messages({
+            'number.base': 'id должен быть числовым',
+            'any.required': 'id обязателен'
         }),
-        size: Joi.string().min(9).max(15).pattern(new RegExp('^\\d{3}/\\d{2}R\\d{2}$')).messages({
+        size: Joi.string().min(9).max(15).pattern(new RegExp('^\\d{3}/\\d{2}R\\d{2}$')).required().messages({
             'string.base': 'Размер должен быть сторокй',
             'string.empty': 'Размер не может быть пустым',
             'string.min': 'Размер должен быть не менее {#limit} символов',
             'string.max': 'Размер должен быть не больше {#limit} символов',
             'string.pattern.base': 'Размер должен соответсвовать формату XXX/XXRXX',
+            'any.required': 'Размер обязателен'
         }),
-        estimated_mileage: Joi.number().min(0).messages({
-            'number.base': 'Примерный пробег должен быть числом',
+        material: Joi.string().min(2).max(25).messages({
+            'string.base': 'Название материала должна быть строкой',
+            'string.empty': 'Название материала не может быть пустым',
+            'string.min': 'Название материала должна быть не менее {#limit} сиволов',
+            'string.max': 'Название материала должна быть не больше {#limit} сиволов',
         }),
-        remaining_mileage: Joi.number().min(0).messages({
-            'number.base': 'Факический пробег должен быть числом',
+        garage_id: Joi.number().required().external(checkGarageIdExsists).messages({
+            'number.base': 'garage_id должен быть числовым',
+            'any.required': 'garege_id обязателен'
         }),
-        garage_id: Joi.number().external(checkGarageIdExists).messages({
-            'number.base': 'Гаражный номер должен быть числом',
-        }),
-        serial_number: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,12}$')).messages({
+        serial_number: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,12}$')).required().messages({
             'string.base': 'Серийный номер должен быть строкой',
             'string.empty': 'Серийный номер не может быть пустым',
             'string.pattern.base': 'Серийный номер должен содержать только буквы и цифры (8-12 символов)',
+            'any.required': 'Серийный номер обязателен',
         })
-    }),
+    })
+
+
 }
 
 export default Schemas;

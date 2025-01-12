@@ -64,7 +64,6 @@ class TiresService extends BaseService {
         return this.deleteRecord('brandTire', id, 'Бренд шин', isUsed);
     }
 
-    // Удаление нескольких записей BrandTire
     async deleteManyBrandTires(ids) {
         return this.deleteManyRecords('brandTire', ids, 'Бренды шин');
     }
@@ -92,7 +91,6 @@ class TiresService extends BaseService {
         return this.deleteRecord('modelTire', id, 'Модель шин', isUsed);
     }
 
-    // Удаление нескольких записей ModelTire
     async deleteManyModelTires(ids) {
         return this.deleteManyRecords('modelTire', ids, 'Модели шин');
     }
@@ -120,10 +118,30 @@ class TiresService extends BaseService {
         return this.deleteRecord('tire', id, 'Шина', isUsed);
     }
 
-    // Удаление нескольких записей Tire
     async deleteManyTires(ids) {
         return this.deleteManyRecords('tire', ids, 'Шины');
     }
+
+    async isTireInUse(tireId) {
+        const tireOnDisk = await prisma.tireOnDisk.findFirst({
+            where: {
+                tire_id: parseInt(tireId),
+                status: 'IN_USE', // Проверяем только активные записи
+            },
+        });
+        return !!tireOnDisk; // Возвращает true, если шина используется
+    }
+
+    async TireWriteOff(data) {
+        const isInUse = await this.isTireInUse(data.tire_id);
+        if (isInUse) {
+            throw new Error('Шина используется и не может быть списана');
+        }
+        console.log(isInUse)
+        return this.createRecord('tireWriteOff', data, 'шина', ['tire'])
+    }
+
+
 }
 
 export default new TiresService();

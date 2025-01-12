@@ -23,10 +23,11 @@ router.delete('/modelTires/delete-many', TireController.deleteManyModelTires);
 // Роуты для Tire
 router.post('/tire', TireController.createTire);
 router.get('/tires', TireController.getAllTires);
-router.get('/tire/:id', TireController.getTireByid);
+router.get('/tire/:id', TireController.getTireById);
 router.put('/tire/:id', TireController.updateTire);
 router.delete('/tire/:id', TireController.deleteTire);
 router.delete('/tires/delete-many', TireController.deleteManyTires);
+router.post('/tireWriteOff', TireController.tireWriteOff);
 
 
 export default router;

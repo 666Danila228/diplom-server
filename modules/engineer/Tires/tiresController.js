@@ -5,9 +5,10 @@ import Schemas from '../../../validations/engineer/Tire/index.js';
 class TireController extends BaseController {
     // Бренд шин
     async createBrandTire(req, res) {
+        const { name } = req.body;
         await super.createRecord(
             req, res,
-            (data) => TiresService.createBrandTire(data.name),
+            () => TiresService.createBrandTire(name),
             'Бренд шины',
             Schemas.createBrandTireSchema
         );
@@ -18,17 +19,20 @@ class TireController extends BaseController {
     }
 
     async getBrandTireById(req, res) {
+        const { id } = req.params;
         await super.getRecordById(
             req, res,
-            (id) => TiresService.getBrandTireById(id),
+            () => TiresService.getBrandTireById(id),
             'Бренд шин'
         );
     }
 
     async updateBrandTire(req, res) {
+        const { id } = req.params;
+        const { name } = req.body;
         await super.updateRecord(
             req, res,
-            (id, data) => TiresService.updateBrandTire(id, data.name),
+            () => TiresService.updateBrandTire(id, name),
             'Бренд шины',
             Schemas.updateBrandTire
         );
@@ -54,9 +58,10 @@ class TireController extends BaseController {
 
     // Модель шин
     async createModelTire(req, res) {
+        const data = req.body;
         await super.createRecord(
             req, res,
-            (data) => TiresService.createModelTire(data),
+            () => TiresService.createModelTire(data),
             'модель шин',
             Schemas.createModelTire
         );
@@ -67,20 +72,23 @@ class TireController extends BaseController {
     }
 
     async getModelTireById(req, res) {
+        const { id } = req.params;
         await super.getRecordById(
             req, res,
-            (id) => TiresService.getModelTireById(id),
+            () => TiresService.getModelTireById(id),
             'модель шин'
         );
     }
 
     async updateModelTire(req, res) {
+        const { id } = req.params;
+        const data = req.body;
         await super.updateRecord(
             req, res,
-            (id, data) => TiresService.updateModelTire(id, data),
+            () => TiresService.updateModelTire(id, data),
             'модель шин',
             Schemas.updateModelTire
-        )
+        );
     }
 
     async deleteModelTire(req, res) {
@@ -103,33 +111,37 @@ class TireController extends BaseController {
 
     // Шина
     async createTire(req, res) {
+        const data = req.body;
         await super.createRecord(
             req, res,
-            (data) => TiresService.createTire(data),
+            () => TiresService.createTire(data),
             'шина',
             Schemas.createTire
-        )
+        );
     }
 
     async getAllTires(req, res) {
         await super.getAllRecords(req, res, TiresService.getAllTires, 'шины');
     }
 
-    async getTireByid(req, res) {
+    async getTireById(req, res) {
+        const { id } = req.params;
         await super.getRecordById(
             req, res,
-            (id) => TiresService.getTireById(id),
+            () => TiresService.getTireById(id),
             'шина'
-        )
+        );
     }
 
     async updateTire(req, res) {
+        const { id } = req.params;
+        const data = req.body;
         await super.updateRecord(
             req, res,
-            (id, data) => TiresService.updateTire(id, data),
+            () => TiresService.updateTire(id, data),
             'шина',
             Schemas.updateTire
-        )
+        );
     }
 
     async deleteTire(req, res) {
@@ -147,6 +159,15 @@ class TireController extends BaseController {
             req, res,
             () => TiresService.deleteManyTires(ids),
             'Шины'
+        );
+    }
+
+    async tireWriteOff(req, res) {
+        const data = req.body;
+        await super.createRecord(
+            req, res,
+            () => TiresService.tireWriteOff(data),
+            'шина'
         );
     }
 }

@@ -118,7 +118,7 @@ model Garage {
   Car        Car[]
   Tire       Tire[]
   Battery    Battery[]
-  WheelDisk  WheelDisk[]
+  WheelDisk  Disk[]
   Coolant    Coolant[]
   EngineOil  EngineOil[]
 }
@@ -131,119 +131,6 @@ model GarageMoveCar {
   date_move   DateTime @default(now()) @db.Timestamptz(0)
 
   Car Car @relation(fields: [car_id], references: [id])
-}
-
-model BrandTire {
-  id        Int       @id @default(autoincrement())
-  name      String    @unique
-  deletedAt DateTime?
-
-  ModelTire ModelTire[]
-}
-
-model ModelTire {
-  id        Int       @id @default(autoincrement())
-  brand_id  Int
-  name      String    @unique
-  deletedAt DateTime?
-
-  BrandTire BrandTire @relation(fields: [brand_id], references: [id])
-  Tire      Tire[]
-}
-
-// Шины
-model Tire {
-  id                Int        @id @default(autoincrement())
-  model_id          Int
-  size              String
-  estimated_mileage Int
-  remaining_mileage Int
-  garage_id         Int
-  created_at        DateTime   @default(now()) @db.Timestamptz(0)
-  deletedAt         DateTime?
-
-  Garage       Garage         @relation(fields: [garage_id], references: [id])
-  ModelTire    ModelTire      @relation(fields: [model_id], references: [id])
-  TireHistory  TireHistory[]
-  TireWriteOff TireWriteOff[]
-  TireOnDisk   TireOnDisk[]
-}
-
-enum TireStatus {
-  IN_USE // В эксплуатации
-  IN_STOCK // На складе
-  WRITTEN_OFF // Списана
-}
-
-model TireWriteOff {
-  id          Int      @id @default(autoincrement())
-  tire_id     Int
-  reason      String // Причина списания
-  description String? // Дополнительное описание
-  created_at  DateTime @default(now()) @db.Timestamptz(0)
-
-  Tire Tire @relation(fields: [tire_id], references: [id])
-}
-
-model BrandWheelDisk {
-  id   Int    @id @default(autoincrement())
-  name String @unique // Название бренда диска
-
-  models ModelWheelDisk[] // Связь с моделями дисков
-}
-
-model ModelWheelDisk {
-  id       Int    @id @default(autoincrement())
-  brand_id Int // Внешний ключ на бренд
-  name     String @unique // Название модели диска
-
-  brand BrandWheelDisk @relation(fields: [brand_id], references: [id]) // Связь с брендом
-  disks WheelDisk[] // Связь с дисками
-}
-
-model WheelDisk {
-  id         Int       @id @default(autoincrement())
-  model_id   Int // Внешний ключ на модель диска
-  size       String // Размер диска
-  material   String // Материал диска
-  garage_id  Int // Внешний ключ на гараж
-  created_at DateTime  @default(now()) @db.Timestamptz(0)
-  deletedAt  DateTime?
-
-  Garage         Garage         @relation(fields: [garage_id], references: [id]) // Связь с гаражом
-  ModelWheelDisk ModelWheelDisk @relation(fields: [model_id], references: [id]) // Связь с моделью диска
-  TireOnDisk     TireOnDisk[] // Связь с шинами
-}
-
-model TireOnDisk {
-  id         Int      @id @default(autoincrement())
-  tire_id    Int
-  disk_id    Int
-  car_id     Int
-  is_spare   Boolean  @default(false) //Докатка или нет
-  status     TireStatus @default(IN_STOCK)
-  created_at DateTime @default(now()) @db.Timestamptz(0)
-
-  Tire Tire      @relation(fields: [tire_id], references: [id])
-  Disk WheelDisk @relation(fields: [disk_id], references: [id])
-  Car  Car       @relation(fields: [car_id], references: [id])
-}
-
-enum TireBatteryAction {
-  INSTALL
-  REMOVE
-}
-
-model TireHistory {
-  id            Int               @id @default(autoincrement())
-  tire_id       Int
-  car_id        Int
-  action        TireBatteryAction
-  is_spare_tire Boolean           @default(false)
-  created_at    DateTime          @db.Timestamptz(0)
-
-  Tire Tire @relation(fields: [tire_id], references: [id])
-  Car  Car  @relation(fields: [car_id], references: [id])
 }
 
 model BrandBattery {
@@ -276,6 +163,7 @@ model Battery {
   capacity  Int
   power     Float
   garage_id Int
+  status    TireStatus      @default(IN_STOCK)
 
   Garage          Garage            @relation(fields: [garage_id], references: [id])
   ModelBattery    ModelBattery      @relation(fields: [model_id], references: [id])
@@ -370,18 +258,17 @@ model Car {
   DrivingCategory DrivingCategory @relation(fields: [driving_category_id], references: [id])
 
   GarageMoveCar       GarageMoveCar[]
-  TireHistory         TireHistory[]
   BatteryHistory      BatteryHistory[]
   FuelCard            FuelCard[]
   TOHistory           TOHistory[]
   RepairHistory       RepairHistory[]
-  TireOnDisk          TireOnDisk[]
   CarQRCode           CarQRCode[]
   BreakdownPrediction BreakdownPrediction[]
   DriverComplaint     DriverComplaint[]
   InsurancePolicy     InsurancePolicy[]
   CoolantHistory      CoolantHistory[]
   EngineOilHistory    EngineOilHistory[]
+  WheelHistory        WheelHistory[]
 }
 
 model FuelCard {
@@ -403,16 +290,43 @@ model FuelCardFuelType {
   FuelCard FuelCard @relation(fields: [fuel_card_id], references: [id])
 }
 
+// Прошлая версия
+// model TOHistory {
+//   id          Int      @id @default(autoincrement())
+//   car_id      Int
+//   date        DateTime @db.Timestamptz(0)
+//   service_id  Int
+//   description String
+
+//   Car     Car     @relation(fields: [car_id], references: [id])
+//   Service Service @relation(fields: [service_id], references: [id])
+// }
+
 model TOHistory {
-  id          Int      @id @default(autoincrement())
-  car_id      Int
-  date        DateTime @db.Timestamptz(0)
-  service_id  Int
-  description String
+  id              Int        @id @default(autoincrement())
+  car_id          Int
+  scheduled_date  DateTime   @db.Timestamptz(0) // Дата, когда должно быть выполнено ТО
+  status          TOStatus   @default(SCHEDULED) // Статус ТО
+  reason          String?    // Причина отмены (если статус CANCELLED)
+  completed_at    DateTime?  @db.Timestamptz(0) // Дата завершения ТО
+  service_id      Int        // Где было выполнено ТО
+  description     String     // Описание выполненных работ
+  engine_oil_used Float?     // Использовано моторного масла
+  coolant_used    Float?     // Использовано тосола
+  created_at      DateTime   @default(now()) @db.Timestamptz(0)
+  updated_at      DateTime   @updatedAt @db.Timestamptz(0)
 
   Car     Car     @relation(fields: [car_id], references: [id])
   Service Service @relation(fields: [service_id], references: [id])
 }
+
+enum TOStatus {
+  SCHEDULED // Запланировано
+  IN_PROGRESS // В работе
+  COMPLETED // Выполнено
+  CANCELLED // Отменено
+}
+
 
 model RepairHistory {
   id          Int      @id @default(autoincrement())
@@ -571,8 +485,8 @@ model EngineOil {
   model_id   Int // Внешний ключ на модель моторного масла
   type       EngineOilType // Тип моторного масла (enum)
   volume     Float // Объем моторного масла (в литрах)
-  viscosity  String? // Вязкость (например, "5W-30")
-  lifespan   Int? // Срок службы в километрах или месяцах
+  viscosity  String // Вязкость (например, "5W-30")
+  lifespan   Int // Срок службы в километрах или месяцах
   garage_id  Int // Внешний ключ на гараж
   created_at DateTime      @default(now()) @db.Timestamptz(0)
   deletedAt  DateTime?
@@ -602,4 +516,125 @@ model EngineOilWriteOff {
   created_at    DateTime @default(now()) @db.Timestamptz(0)
 
   EngineOil EngineOil @relation(fields: [engine_oil_id], references: [id]) // Связь с моторным маслом
+}
+
+// Шины
+
+// КОЛЁСА
+// Бренд шин
+model BrandTire {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  deletedAt DateTime?
+
+  ModelTire ModelTire[]
+}
+
+// Модель шин
+model ModelTire {
+  id        Int       @id @default(autoincrement())
+  brand_id  Int
+  name      String    @unique
+  deletedAt DateTime?
+
+  BrandTire BrandTire @relation(fields: [brand_id], references: [id])
+  Tire      Tire[]
+}
+
+// Шины
+model Tire {
+  id                Int        @id @default(autoincrement())
+  model_id          Int
+  size              String
+  estimated_mileage Int
+  remaining_mileage Int
+  garage_id         Int
+  serial_number     String     @unique
+  status            TireStatus @default(IN_STOCK)
+  created_at        DateTime   @default(now()) @db.Timestamptz(0)
+  deletedAt         DateTime?
+
+  Garage       Garage         @relation(fields: [garage_id], references: [id])
+  ModelTire    ModelTire      @relation(fields: [model_id], references: [id])
+  TireWriteOff TireWriteOff[]
+  TireOnDisk   TireOnDisk[]
+}
+
+model WheelHistory {
+  id            Int               @id @default(autoincrement())
+  tireOnDisk_id Int
+  car_id        Int
+  action        TireBatteryAction
+  is_spare_tire Boolean           @default(false)
+  created_at    DateTime          @db.Timestamptz(0)
+
+  TireOnDisk TireOnDisk @relation(fields: [tireOnDisk_id], references: [id])
+  Car        Car        @relation(fields: [car_id], references: [id])
+}
+
+model TireWriteOff {
+  id          Int      @id @default(autoincrement())
+  tire_id     Int
+  reason      String // Причина списания
+  description String? // Дополнительное описание
+  created_at  DateTime @default(now()) @db.Timestamptz(0)
+
+  Tire Tire @relation(fields: [tire_id], references: [id])
+}
+
+enum TireStatus {
+  IN_USE // В эксплуатации
+  IN_STOCK // На складе
+  WRITTEN_OFF // Списана
+}
+
+// Диски
+model BrandDisk {
+  id   Int    @id @default(autoincrement())
+  name String @unique // Название бренда диска
+
+  models ModelDisk[] // Связь с моделями дисков
+}
+
+model ModelDisk {
+  id       Int    @id @default(autoincrement())
+  brand_id Int // Внешний ключ на бренд
+  name     String @unique // Название модели диска
+
+  brand BrandDisk @relation(fields: [brand_id], references: [id]) // Связь с брендом
+  disks Disk[] // Связь с дисками
+}
+
+model Disk {
+  id            Int        @id @default(autoincrement())
+  model_id      Int // Внешний ключ на модель диска
+  size          String // Размер диска
+  material      String // Материал диска
+  garage_id     Int // Внешний ключ на гараж
+  status        TireStatus @default(IN_STOCK)
+  serial_number String     @unique
+  created_at    DateTime   @default(now()) @db.Timestamptz(0)
+  deletedAt     DateTime?
+
+  Garage         Garage       @relation(fields: [garage_id], references: [id]) // Связь с гаражом
+  ModelWheelDisk ModelDisk    @relation(fields: [model_id], references: [id]) // Связь с моделью диска
+  TireOnDisk     TireOnDisk[] // Связь с шинами
+}
+
+model TireOnDisk {
+  id         Int        @id @default(autoincrement())
+  tire_id    Int
+  disk_id    Int
+  is_spare   Boolean    @default(false) //Докатка или нет
+  status     TireStatus @default(IN_STOCK)
+  created_at DateTime   @default(now()) @db.Timestamptz(0)
+
+  Tire         Tire           @relation(fields: [tire_id], references: [id])
+  Disk         Disk           @relation(fields: [disk_id], references: [id])
+  WheelHistory WheelHistory[]
+}
+
+enum TireBatteryAction {
+  INSTALL
+  REMOVE
 }

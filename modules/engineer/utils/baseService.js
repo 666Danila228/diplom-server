@@ -32,7 +32,11 @@ class BaseService {
 
     async getAllRecords(model) {
         try {
-            return await prisma[model].findMany();
+            return await prisma[model].findMany({
+                // where: {
+                //     deletedAt: null         !!!!!!!!ПОДУМАЙ НАДО ЛИ ЭТО!!!!!!!!
+                // }
+            });
         } catch (error) {
             console.error(error);
             throw new Error(`Не удалось получить записи`);
@@ -42,7 +46,10 @@ class BaseService {
     async getRecordById(model, id, entityName) {
         try {
             const record = await prisma[model].findUnique({
-                where: { id: parseInt(id) },
+                where: { 
+                    id: parseInt(id),
+                    // deletedAt: null,    !!!!!!!!ПОДУМАЙ НАДО ЛИ ЭТО!!!!!!!!
+                 },
             });
 
             if (!record) {
@@ -70,7 +77,10 @@ class BaseService {
             });
 
             return await prisma[model].update({
-                where: { id: parseInt(id) },
+                where: { 
+                    id: parseInt(id),
+                    // deletedAt: null,   !!!!!!!!ПОДУМАЙ НАДО ЛИ ЭТО!!!!!!!!
+                 },
                 data: updateData,
             });
         } catch (error) {
@@ -86,7 +96,10 @@ class BaseService {
             if (isUsed) {
                 console.log(`Запись используется, выполняется мягкое удаление`);
                 await prisma[model].update({
-                    where: { id: parseInt(id) },
+                    where: { 
+                        id: parseInt(id),
+                        // deletedAt: null, !!!!!!!!ПОДУМАЙ НАДО ЛИ ЭТО!!!!!!!!
+                     },
                     data: { deletedAt: new Date() },
                 });
                 console.log(`Запись ${model} с ID ${id} помечена как удаленная`);
@@ -121,7 +134,10 @@ class BaseService {
 
                     if (isUsed) {
                         await prisma[model].update({
-                            where: { id: parseInt(id) },
+                            where: { 
+                                id: parseInt(id),
+                                // deletedAt: null, !!!!!!!!ПОДУМАЙ НАДО ЛИ ЭТО!!!!!!!!
+                             },
                             data: { deletedAt: new Date() },
                         });
                         return { id, status: 'soft-deleted' };
@@ -148,6 +164,7 @@ class BaseService {
     async isRecordUsed(model, id) {
         throw new Error(`Метод isRecordUsed не реализован для модели ${model}`);
     }
+
 }
 
 export default BaseService;
