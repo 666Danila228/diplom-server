@@ -23,7 +23,17 @@ class BaseController {
 
     async getAllRecords(req, res, serviceMethod, entityName) {
         try {
-            const records = await serviceMethod();
+            const { where, orderBy, include, skip, take } = req.query;
+
+            const options = {
+                where: where ? JSON.parse(where) : undefined,
+                orderBy: orderBy ? JSON.parse(orderBy) : undefined,
+                include: include ? JSON.parse(include) : undefined,
+                skip: skip ? parseInt(skip) : undefined,
+                take: take ? parseInt(take) : undefined,
+            };
+
+            const records = await serviceMethod(options);
             res.status(200).json({ message: `Список ${entityName}`, records });
         } catch (error) {
             console.error(error);

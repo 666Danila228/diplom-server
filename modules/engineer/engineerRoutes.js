@@ -5,7 +5,8 @@ import diskRoutes from "./Disk/disksRoutes.js";
 import wheelRoutes from "./Wheel/wheelRoutes.js";
 import coolerRoutes from "./Coolant/coolantRoutes.js"
 import avtoServiceRoutes from "./avtoService/avtoServiceRoutes.js";
-import carRoutes from "./Car/carRoutes.js"
+import carRoutes from "./Car/carRoutes.js";
+import fuelCardRoutes from "./FuelCard/fuelCardRoutes.js";
 
 const router = express.Router();
 
@@ -16,6 +17,7 @@ router.use('/', wheelRoutes);
 router.use('/', coolerRoutes);
 router.use('/', avtoServiceRoutes);
 router.use('/', carRoutes);
+router.use('/', fuelCardRoutes)
 
 
 export default router;

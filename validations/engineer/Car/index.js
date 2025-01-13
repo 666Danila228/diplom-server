@@ -13,7 +13,7 @@ const checkBrandIdExists = async (brand_id) => {
 }
 
 const checkModelIdExists = async (model_id) => {
-    if (!model_id) return console.log("Ошибка тут");
+    if (!model_id) return;
     await checkRecordExists('модели машин', 'modelCar', 'id', model_id, true);
 }
 
@@ -247,72 +247,59 @@ const Schemas = {
     updateCar: Joi.object({
         id: Joi.number().required().external(checkCarIdExsist).messages({
             'number.base': 'id должен быть числовым',
-            'any.required': 'id обязателен',
         }),
-        model_car_id: Joi.number().required().external(checkModelIdExists).messages({
+        model_car_id: Joi.number().optional().external(checkModelIdExists).messages({
             'number.base': 'model_car_id должен быть числовым',
-            'any.required': 'model_car_id обязателен',
         }),
-        year_of_realise: Joi.date().iso().required().messages({
+        year_of_realise: Joi.date().iso().optional().messages({
             'date.base': 'Год выпуска должен быть датой',
             'date.format': 'Год выпуска должен быть в формате ISO (YYYY-MM-DD)',
-            'any.required': 'Год выпуска обязателен',
         }),
-        type_car_id: Joi.number().required().external(checkTypeIdExists).messages({
+        type_car_id: Joi.number().optional().external(checkTypeIdExists).messages({
             'number.base': 'type_car_id должен быть числовым',
-            'any.required': 'type_car_id обязателен',
         }),
-        color: Joi.string().min(3).max(50).required().messages({
+        color: Joi.string().min(3).max(50).optional().messages({
             'string.base': 'Цвет должен быть строкой',
             'string.empty': 'Цвет не может быть пустым',
             'string.min': 'Цвет должен быть не менее {#limit} символов',
             'string.max': 'Цвет должен быть не более {#limit} символов',
-            'any.required': 'Цвет обязателен',
         }),
-        horse_power: Joi.number().positive().required().messages({
+        horse_power: Joi.number().positive().optional().messages({
             'number.base': 'Мощность (л.с.) должна быть числом',
             'number.positive': 'Мощность (л.с.) должна быть положительным числом',
-            'any.required': 'Мощность (л.с.) обязательна',
         }),
         kilowatt_hour: Joi.number().positive().optional().messages({
             'number.base': 'Мощность (кВт) должна быть числом',
             'number.positive': 'Мощность (кВт) должна быть положительным числом',
         }),
-        passport_number: Joi.string().min(5).max(20).required().messages({
+        passport_number: Joi.string().min(5).max(20).optional().messages({
             'string.base': 'Номер паспорта должен быть строкой',
             'string.empty': 'Номер паспорта не может быть пустым',
             'string.min': 'Номер паспорта должен быть не менее {#limit} символов',
             'string.max': 'Номер паспорта должен быть не более {#limit} символов',
-            'any.required': 'Номер паспорта обязателен',
         }),
-        fuel_type: Joi.string().valid('PETROL', 'DIESEL', 'ELECTRIC', 'HYBRID').required().messages({
+        fuel_type: Joi.string().valid('PETROL', 'DIESEL', 'ELECTRIC', 'HYBRID').optional().messages({
             'string.base': 'Тип топлива должен быть строкой',
-            'any.required': 'Тип топлива обязателен',
             'any.only': 'Тип топлива должен быть одним из: PETROL, DIESEL, ELECTRIC, HYBRID',
         }),
-        engine_capacity: Joi.number().positive().required().messages({
+        engine_capacity: Joi.number().positive().optional().messages({
             'number.base': 'Объем двигателя должен быть числом',
             'number.positive': 'Объем двигателя должен быть положительным числом',
-            'any.required': 'Объем двигателя обязателен',
         }),
-        transmission_type: Joi.string().valid('MECHANICAL', 'AUTOMATIC', 'STEPLESS', 'ROBOTIC').required().messages({
+        transmission_type: Joi.string().valid('MECHANICAL', 'AUTOMATIC', 'STEPLESS', 'ROBOTIC').optional().messages({
             'string.base': 'Тип трансмиссии должен быть строкой',
-            'any.required': 'Тип трансмиссии обязателен',
             'any.only': 'Тип трансмиссии должен быть одним из: MECHANICAL, AUTOMATIC, STEPLESS, ROBOTIC',
         }),
-        driving_category_id: Joi.number().required().external(checkDrivingCategoryIdExists).messages({
+        driving_category_id: Joi.number().optional().external(checkDrivingCategoryIdExists).messages({
             'number.base': 'driving_category_id должен быть числовым',
-            'any.required': 'driving_category_id обязателен',
         }),
-        driveType: Joi.string().valid('FRONT', 'REAR', 'ALL').required().messages({
+        driveType: Joi.string().valid('FRONT', 'REAR', 'ALL').optional().messages({
             'string.base': 'Тип привода должен быть строкой',
-            'any.required': 'Тип привода обязателен',
             'any.only': 'Тип привода должен быть одним из: FRONT, REAR, ALL',
         }),
-        mileage: Joi.number().positive().required().messages({
+        mileage: Joi.number().positive().optional().messages({
             'number.base': 'Пробег должен быть числом',
             'number.positive': 'Пробег должен быть положительным числом',
-            'any.required': 'Пробег обязателен',
         }),
         garage_id: Joi.number().optional().external(checkGarageIdExists).messages({
             'number.base': 'garage_id должен быть числовым',
@@ -323,15 +310,13 @@ const Schemas = {
         service_id: Joi.number().optional().external(checkAvtoServiceIdExsist).messages({
             'number.base': 'service_id должен быть числовым',
         }),
-        vin_body: Joi.string().required().external(checkVinBodyUnique).messages({
+        vin_body: Joi.string().optional().external(checkVinBodyUnique).messages({
             'string.base': 'VIN кузова должен быть строкой',
             'string.empty': 'VIN кузова не может быть пустым',
-            'any.required': 'VIN кузова обязателен',
         }),
-        vin_engine: Joi.string().required().external(checkVinEngineUnique).messages({
+        vin_engine: Joi.string().optional().external(checkVinEngineUnique).messages({
             'string.base': 'VIN двигателя должен быть строкой',
             'string.empty': 'VIN двигателя не может быть пустым',
-            'any.required': 'VIN двигателя обязателен',
         }),
     })
 }

@@ -187,7 +187,29 @@ class CarController extends BaseController {
 
     async updateCar(req, res) {
         const { id } = req.params;
-        const data = req.body;
+        const { horse_power, kilowatt_hour, ...otherData } = req.body;
+
+        let calculatedHorsePower, calculatedKilowattHour;
+        
+        if(horse_power && kilowatt_hour) {
+            calculatedHorsePower = horse_power;
+            calculatedKilowattHour = kilowatt_hour;
+        } else if (horse_power) {
+            calculatedHorsePower = horse_power;
+            calculatedKilowattHour = horse_power * 0.7355;
+        } else if (kilowatt_hour) {
+            calculatedHorsePower = kilowatt_hour / 0.7355;
+            calculatedKilowattHour = kilowatt_hour;
+        } else {
+            return res.status(400).json({ message: 'Необходимо передать лошадиные силы или килова часы' });
+        }
+
+        const data = {
+            ...otherData,
+            horse_power: calculatedHorsePower,
+            kilowatt_hour: calculatedKilowattHour,
+        };
+
         await super.updateRecord(
             req, res,
             () => CarService.updateCar(id, data),

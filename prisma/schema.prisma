@@ -52,6 +52,9 @@ model User {
   Garage          Garage[]
   Notification    Notification[]
   DriverComplaint DriverComplaint[]
+
+  FuelCard                  FuelCard[]
+  FuelCardAssignmentHistory FuelCardAssignmentHistory[]
 }
 
 // Таблица с ролями
@@ -96,8 +99,9 @@ model ModelCar {
   brand_id Int
   name     String @unique
 
-  Car      Car[]
-  BrandCar BrandCar @relation(fields: [brand_id], references: [id])
+  Car                 Car[]
+  BrandCar            BrandCar              @relation(fields: [brand_id], references: [id])
+  FuelConsumptionRate FuelConsumptionRate[]
 }
 
 model TypeCar {
@@ -105,7 +109,8 @@ model TypeCar {
   name        String @unique
   interval_to Int
 
-  Car Car[]
+  Car                 Car[]
+  FuelConsumptionRate FuelConsumptionRate[]
 }
 
 // Гараж
@@ -204,18 +209,6 @@ model Service {
   RepairHistory RepairHistory[]
 }
 
-enum FuelType {
-  PETROL
-  DIESEL
-  ELECTRIC
-  HYBRID
-}
-
-enum PeriodType {
-  DAILY
-  MONTHLY
-}
-
 enum TransmissionType {
   MECHANICAL
   AUTOMATIC
@@ -271,23 +264,89 @@ model Car {
   WheelHistory        WheelHistory[]
 }
 
-model FuelCard {
-  id     Int      @id @default(autoincrement())
-  car_id Int
-  period DateTime @db.Timestamptz(0)
+// Норма расхода топлива для модели и типа машины
+model FuelConsumptionRate {
+  id           Int      @id @default(autoincrement())
+  model_car_id Int // Внешний ключ на модель машины
+  type_car_id  Int // Внешний ключ на тип машины
+  fuel_type    FuelType // Тип топлива
+  daily_rate   Float // Дневная норма расхода топлива (в литрах)
+  created_at   DateTime @default(now()) @db.Timestamptz(0)
+  updated_at   DateTime @updatedAt @db.Timestamptz(0)
 
-  Car              Car                @relation(fields: [car_id], references: [id])
-  FuelCardFuelType FuelCardFuelType[]
+  ModelCar ModelCar @relation(fields: [model_car_id], references: [id])
+  TypeCar  TypeCar  @relation(fields: [type_car_id], references: [id])
+
+  @@unique([model_car_id, type_car_id, fuel_type]) // Уникальный ключ для комбинации модели, типа и топлива
 }
 
-model FuelCardFuelType {
-  id           Int        @id @default(autoincrement())
-  fuel_card_id Int
-  fuel_type    FuelType
-  fuel_amount  Int
-  period_type  PeriodType
+// Топливная карта
+model FuelCard {
+  id              Int            @id @default(autoincrement())
+  car_id          Int // Внешний ключ на машину (обязательный)
+  user_id         Int? // Внешний ключ на пользователя (необязательный)
+  status          FuelCardStatus @default(ACTIVE) // Статус карты
+  last_updated_at DateTime       @default(now()) @db.Timestamptz(0) // Дата последнего обновления баланса
+
+  Car                       Car                         @relation(fields: [car_id], references: [id])
+  User                      User?                       @relation(fields: [user_id], references: [id]) // Необязательная связь
+  FuelCardFuel              FuelCardFuel[] // Связь с видами топлива
+  FuelCardHistory           FuelCardHistory[] // История расходов топлива
+  FuelCardAssignmentHistory FuelCardAssignmentHistory[]
+}
+
+// Связь топливной карты с видами топлива
+model FuelCardFuel {
+  id              Int      @id @default(autoincrement())
+  fuel_card_id    Int // Внешний ключ на топливную карту
+  fuel_type       FuelType // Внешний ключ на тип топлива
+  daily_rate      Float // Дневная норма расхода топлива (в литрах)
+  current_balance Float // Текущий баланс топлива
 
   FuelCard FuelCard @relation(fields: [fuel_card_id], references: [id])
+
+  @@unique([fuel_card_id, fuel_type]) // Уникальный ключ для комбинации карты и типа топлива
+}
+
+// История расходов топлива
+model FuelCardHistory {
+  id            Int      @id @default(autoincrement())
+  fuel_card_id  Int
+  fuel_type     FuelType // Внешний ключ на тип топлива
+  date          DateTime @db.Timestamptz(0) // Дата расхода
+  used_amount   Float // Количество потраченного топлива
+  balance_after Float // Баланс после расхода
+
+  FuelCard FuelCard @relation(fields: [fuel_card_id], references: [id])
+}
+
+enum FuelType {
+  PETROL
+  DIESEL
+  ELECTRIC
+}
+
+// История привязок водителей к топливным картам
+model FuelCardAssignmentHistory {
+  id           Int            @id @default(autoincrement())
+  fuel_card_id Int // Внешний ключ на топливную карту
+  user_id      Int? // Внешний ключ на пользователя (необязательный, если карта отвязана)
+  action       FuelCardAction
+  created_at   DateTime       @default(now()) @db.Timestamptz(0) // Время создания записи
+
+  FuelCard FuelCard @relation(fields: [fuel_card_id], references: [id])
+  User     User?    @relation(fields: [user_id], references: [id]) // Необязательная связь
+}
+
+enum FuelCardStatus {
+  ACTIVE // Активна
+  INACTIVE // Неактивна
+  ASSIGNED // Привязана к водителю
+}
+
+enum FuelCardAction {
+  ASSIGN
+  UNASSIGN
 }
 
 // Прошлая версия
@@ -303,18 +362,18 @@ model FuelCardFuelType {
 // }
 
 model TOHistory {
-  id              Int        @id @default(autoincrement())
+  id              Int       @id @default(autoincrement())
   car_id          Int
-  scheduled_date  DateTime   @db.Timestamptz(0) // Дата, когда должно быть выполнено ТО
-  status          TOStatus   @default(SCHEDULED) // Статус ТО
-  reason          String?    // Причина отмены (если статус CANCELLED)
-  completed_at    DateTime?  @db.Timestamptz(0) // Дата завершения ТО
-  service_id      Int        // Где было выполнено ТО
-  description     String     // Описание выполненных работ
-  engine_oil_used Float?     // Использовано моторного масла
-  coolant_used    Float?     // Использовано тосола
-  created_at      DateTime   @default(now()) @db.Timestamptz(0)
-  updated_at      DateTime   @updatedAt @db.Timestamptz(0)
+  scheduled_date  DateTime  @db.Timestamptz(0) // Дата, когда должно быть выполнено ТО
+  status          TOStatus  @default(SCHEDULED) // Статус ТО
+  reason          String? // Причина отмены (если статус CANCELLED)
+  completed_at    DateTime? @db.Timestamptz(0) // Дата завершения ТО
+  service_id      Int // Где было выполнено ТО
+  description     String // Описание выполненных работ
+  engine_oil_used Float? // Использовано моторного масла
+  coolant_used    Float? // Использовано тосола
+  created_at      DateTime  @default(now()) @db.Timestamptz(0)
+  updated_at      DateTime  @updatedAt @db.Timestamptz(0)
 
   Car     Car     @relation(fields: [car_id], references: [id])
   Service Service @relation(fields: [service_id], references: [id])
@@ -326,7 +385,6 @@ enum TOStatus {
   COMPLETED // Выполнено
   CANCELLED // Отменено
 }
-
 
 model RepairHistory {
   id          Int      @id @default(autoincrement())

@@ -30,12 +30,16 @@ class BaseService {
         }
     }
 
-    async getAllRecords(model) {
+    async getAllRecords(model, options = {}) {
         try {
+            const { where, orderBy, include, skip, take } = options;
+
             return await prisma[model].findMany({
-                // where: {
-                //     deletedAt: null         !!!!!!!!ПОДУМАЙ НАДО ЛИ ЭТО!!!!!!!!
-                // }
+                where,
+                orderBy,
+                include,
+                skip,
+                take,
             });
         } catch (error) {
             console.error(error);
