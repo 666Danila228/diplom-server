@@ -50,10 +50,10 @@ class BaseService {
     async getRecordById(model, id, entityName) {
         try {
             const record = await prisma[model].findUnique({
-                where: { 
+                where: {
                     id: parseInt(id),
                     // deletedAt: null,    !!!!!!!!ПОДУМАЙ НАДО ЛИ ЭТО!!!!!!!!
-                 },
+                },
             });
 
             if (!record) {
@@ -72,6 +72,12 @@ class BaseService {
             await checkRecordExists(entityName, model, 'id', id, true);
 
             const updateData = { ...data };
+
+            const modelFields = Object.keys(prisma[model].fields);
+            if (modelFields.includes('updated_at')) {
+                updateData.updated_at = new Date();
+            }
+
             relationFields.forEach((field) => {
                 if (data[field]) {
                     updateData[field] = {
@@ -81,10 +87,10 @@ class BaseService {
             });
 
             return await prisma[model].update({
-                where: { 
+                where: {
                     id: parseInt(id),
                     // deletedAt: null,   !!!!!!!!ПОДУМАЙ НАДО ЛИ ЭТО!!!!!!!!
-                 },
+                },
                 data: updateData,
             });
         } catch (error) {
@@ -100,10 +106,10 @@ class BaseService {
             if (isUsed) {
                 console.log(`Запись используется, выполняется мягкое удаление`);
                 await prisma[model].update({
-                    where: { 
+                    where: {
                         id: parseInt(id),
                         // deletedAt: null, !!!!!!!!ПОДУМАЙ НАДО ЛИ ЭТО!!!!!!!!
-                     },
+                    },
                     data: { deletedAt: new Date() },
                 });
                 console.log(`Запись ${model} с ID ${id} помечена как удаленная`);
@@ -138,10 +144,10 @@ class BaseService {
 
                     if (isUsed) {
                         await prisma[model].update({
-                            where: { 
+                            where: {
                                 id: parseInt(id),
                                 // deletedAt: null, !!!!!!!!ПОДУМАЙ НАДО ЛИ ЭТО!!!!!!!!
-                             },
+                            },
                             data: { deletedAt: new Date() },
                         });
                         return { id, status: 'soft-deleted' };

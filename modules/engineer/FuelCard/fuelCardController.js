@@ -54,7 +54,7 @@ class FuelCardController extends BaseController {
             req, res,
             () => FuelCardService.updateFuelConsumptionRate(id, data),
             "Стандарт топлива на модели и тип машины",
-            Schemas.updateFuelConsumptionRateSchema // Схема валидации, если есть
+            // Schemas.updateFuelConsumptionRateSchema 
         );
     }
 
@@ -66,7 +66,7 @@ class FuelCardController extends BaseController {
             req, res,
             () => FuelCardService.createFuelCard(data),
             "Топливная карта",
-            Schemas.createFuelCardSchema // Схема валидации, если есть
+            // Schemas.createFuelCardSchema
         );
     }
 

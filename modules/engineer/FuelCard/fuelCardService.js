@@ -33,7 +33,7 @@ class FuelCardService extends BaseService {
     }
 
     // Проверка стандартной нормы для машины
-    async checkFuelRateForCar(carId, fuelType) {
+    async checkFuelRateForCar(carId) {
         const car = await prisma.car.findUnique({
             where: { id: carId },
             include: {
@@ -41,49 +41,69 @@ class FuelCardService extends BaseService {
                 TypeCar: true,
             },
         });
-
+    
         if (!car) {
             throw new Error("Машина не найдена");
         }
 
-        const fuelRate = await prisma.fuelConsumptionRate.findUnique({
+        const fuelRates = await prisma.fuelConsumptionRate.findMany({
             where: {
-                model_car_id_type_car_id_fuel_type: {
-                    model_car_id: car.model_car_id,
-                    type_car_id: car.type_car_id,
-                    fuel_type: fuelType,
-                },
+                model_car_id: car.model_car_id,
+                type_car_id: car.type_car_id,
             },
         });
-
-        if (!fuelRate) {
-            throw new Error("Стандартная норма расхода топлива не найдена");
+    
+        if (fuelRates.length === 0) {
+            throw new Error("Стандартные нормы расхода топлива для машины не найдены");
         }
-
-        return fuelRate;
+    
+        return fuelRates;
     }
 
     // Создание топливной карты
     async createFuelCard(data) {
-        const { car_id, fuels } = data; 
-
+        const { car_id } = data;
+    
+        const car = await prisma.car.findUnique({
+            where: { id: car_id },
+            include: {
+                ModelCar: true,
+                TypeCar: true,
+            },
+        });
+    
+        if (!car) {
+            throw new Error("Машина не найдена");
+        }
+    
+        const fuelRates = await prisma.fuelConsumptionRate.findMany({
+            where: {
+                model_car_id: car.model_car_id,
+                type_car_id: car.type_car_id,
+            },
+        });
+    
+        if (fuelRates.length === 0) {
+            throw new Error("Стандартные нормы расхода топлива для машины не найдены");
+        }
+    
         const fuelCard = await prisma.fuelCard.create({
             data: {
                 car_id,
                 status: 'ACTIVE',
                 FuelCardFuel: {
-                    create: fuels.map((fuel) => ({
-                        fuel_type: fuel.fuel_type,
-                        daily_rate: fuel.daily_rate,
-                        current_balance: fuel.daily_rate,
+                    create: fuelRates.map((rate) => ({
+                        fuel_type: rate.fuel_type,
+                        daily_rate: rate.daily_rate,
+                        current_balance: rate.daily_rate * 10,
                     })),
                 },
             },
             include: {
-                FuelCardFuel: true, 
+                FuelCardFuel: true,
             },
         });
-
+    
         return fuelCard;
     }
 
@@ -92,7 +112,7 @@ class FuelCardService extends BaseService {
         return await prisma.fuelCard.findMany({
             ...options,
             include: {
-                FuelCardFuel: true, // Включаем данные о топливе
+                FuelCardFuel: true,
             },
         });
     }
@@ -102,7 +122,7 @@ class FuelCardService extends BaseService {
         const fuelCard = await prisma.fuelCard.findUnique({
             where: { id },
             include: {
-                FuelCardFuel: true, // Включаем данные о топливе
+                FuelCardFuel: true, 
             },
         });
 
@@ -118,7 +138,7 @@ class FuelCardService extends BaseService {
         const fuelCard = await prisma.fuelCard.findFirst({
             where: { car_id: carId },
             include: {
-                FuelCardFuel: true, // Включаем данные о топливе
+                FuelCardFuel: true, 
             },
         });
 
@@ -131,14 +151,13 @@ class FuelCardService extends BaseService {
 
     // Обновление топливной карты
     async updateFuelCard(id, data) {
-        const { fuels, ...rest } = data; // fuels - массив объектов с fuel_type и daily_rate
+        const { fuels, ...rest } = data; 
 
-        // Обновляем основную информацию о карте
         const updatedFuelCard = await prisma.fuelCard.update({
             where: { id },
             data: rest,
             include: {
-                FuelCardFuel: true, // Включаем данные о топливе
+                FuelCardFuel: true, 
             },
         });
 
@@ -161,7 +180,7 @@ class FuelCardService extends BaseService {
                             fuel_card_id: id,
                             fuel_type: fuel.fuel_type,
                             daily_rate: fuel.daily_rate,
-                            current_balance: fuel.daily_rate, // Начальный баланс равен дневной норме
+                            current_balance: fuel.daily_rate, 
                         },
                     });
                 })
@@ -287,3 +306,4 @@ class FuelCardService extends BaseService {
 }
 
 export default new FuelCardService();
+
