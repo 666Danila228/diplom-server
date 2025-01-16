@@ -9,20 +9,20 @@ class BaseService {
             if (data.name) {
                 await checkRecordExists(entityName, model, 'name', data.name, false);
             }
-
+    
             const createData = { ...data };
             relationFields.forEach((field) => {
                 if (data[field]) {
                     createData[field] = {
-                        connect: { id: data[field] },
+                        connect: { id: data[field] }, // Связываем с существующей записью
                     };
                 }
             });
-
+    
             const newRecord = await prisma[model].create({
                 data: createData,
             });
-
+    
             return newRecord;
         } catch (error) {
             console.error(error);

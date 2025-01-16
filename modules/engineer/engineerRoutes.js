@@ -7,6 +7,7 @@ import coolerRoutes from "./Coolant/coolantRoutes.js"
 import avtoServiceRoutes from "./avtoService/avtoServiceRoutes.js";
 import carRoutes from "./Car/carRoutes.js";
 import fuelCardRoutes from "./FuelCard/fuelCardRoutes.js";
+import TORoutes from "./TO/toRoutes.js";
 
 const router = express.Router();
 
@@ -17,7 +18,8 @@ router.use('/', wheelRoutes);
 router.use('/', coolerRoutes);
 router.use('/', avtoServiceRoutes);
 router.use('/', carRoutes);
-router.use('/', fuelCardRoutes)
+router.use('/', fuelCardRoutes);
+router.use('/', TORoutes);
 
 
 export default router;

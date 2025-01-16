@@ -1,5 +1,6 @@
 import BaseService from "../utils/baseService.js";
 import prisma from "../../../prisma/prismaClient.js";
+import TOService from "../TO/toService.js";
 
 class CarService extends BaseService {
     // Бренд машины
@@ -65,7 +66,9 @@ class CarService extends BaseService {
     // Создание машины
 
     async createCar(data) {
-        return this.createRecord('car', data, 'машина', ['service', 'Garage', 'TypeCar', 'ModelCar', 'DrivingCategory']);
+        const car = await this.createRecord('car', data, 'машина', ['service', 'Garage', 'TypeCar', 'ModelCar', 'DrivingCategory']);
+        await TOService.scheduleInitialTO(car.id, car.type_car_id);
+        return car;
     }
 
     async getAllCars() {
