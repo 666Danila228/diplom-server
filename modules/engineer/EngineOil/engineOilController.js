@@ -1,5 +1,5 @@
 import BaseController from '../utils/baseController.js';
-import EngineOilsService from './EngineOilsService.js';
+import EngineOilsService from './engineOilService.js';
 import Schemas from '../../../validations/engineer/EngineOil/index.js';
 
 class EngineOilController extends BaseController {

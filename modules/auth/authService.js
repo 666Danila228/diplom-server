@@ -5,31 +5,16 @@ import prisma from "../../prisma/prismaClient.js";
 import bcrypt from "bcrypt";
 import { use } from "bcrypt/promises.js";
 import jwt from "jsonwebtoken";
+import BaseService from "../engineer/utils/baseService.js";
 
-class AuthService {
+class AuthService extends BaseService {
     // Регистрация пользователя
-    async createUser(email, password, surname, name, patronymic) {
-        try {
-            // Хеширование пароля
-            const hashedPassword = await bcrypt.hash(password, 10);
-    
-            // Создание нового пользователя
-            const newUser = await prisma.user.create({
-                data: {
-                    surname,
-                    name,
-                    patronymic,
-                    password: hashedPassword,
-                    email,
-                },
-            });
-    
-            // Возвращение данных нового пользователя
-            return newUser;
-        } catch (error) {
-            console.error(error);
-            throw new Error("Ошибка при создании пользователя");
-        }
+    async createUser(data) {
+        const hashedPassword = await bcrypt.hash(data.password, 10);
+        return this.createRecord('user', {
+            ...data,
+            password: hashedPassword,
+        }, 'пользователь'); // Указываем, что проверка должна быть по email
     }
 
     //Авторизация   
@@ -62,10 +47,34 @@ class AuthService {
             const refreshToken = await this.generateRefreshToken(existingUser);
 
             // Возвращение токена и рефрештокена
-            return { token, refreshToken };
+            return { token, refreshToken, existingUser };
         } catch (error) {
             console.error(error);
             throw error;
+        }
+    }
+    
+     // Проверка авторизации
+    async checkAuth(token) {
+        try {
+            // Проверка подлинности токена
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+            // Поиск пользователя в базе данных
+            const user = await prisma.user.findUnique({
+                where: { id: decoded.userId },
+            });
+
+            // Проверка, существует ли пользователь и совпадает ли версия токена
+            if (!user || user.jwt_token_version !== decoded.jwt_token_version) {
+                throw new Error("Токен недействителен");
+            }
+
+            // Возвращение данных пользователя
+            return user;
+        } catch (error) {
+            console.error(error);
+            throw new Error("Ошибка при проверке авторизации");
         }
     }
 

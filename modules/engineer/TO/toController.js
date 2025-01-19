@@ -43,12 +43,12 @@ class TOController extends BaseController {
     async addConsumables(req, res) {
         const { toId } = req.params; 
         const { consumables } = req.body; 
-
+    
         await super.createRecord(
             req, res,
             () => TOService.addConsumables(toId, consumables),
-            'Добавление расходных материалов',
-            Schemas.consumableSchema
+            'дОБАВЛЕНИЕ РАСХОДНИКОВ',
+            Schemas.addConsumablesSchema
         )
     }
     
@@ -137,17 +137,48 @@ class TOController extends BaseController {
         }
     }
 
+    async getFullConsumableInfo(consumableId) {
+        try {
+            console.log('Получение расходника с ID:', consumableId);
+            const consumable = await super.getRecordById('Consumable', consumableId, 'Расходный материал');
+            console.log('Расходник найден:', consumable);
+    
+            let fullInfo = null;
+    
+            // В зависимости от типа расходника вызываем соответствующий сервис
+            if (consumable.material_type === 'Coolant') {
+                console.log('Тип расходника: Coolant');
+                fullInfo = await CoolantService.getCoolantById(consumable.material_id);
+            } else if (consumable.material_type === 'EngineOil') {
+                console.log('Тип расходника: EngineOil');
+                fullInfo = await EngineOilService.getEngineOilById(consumable.material_id);
+            }
+    
+            console.log('Полная информация о расходнике:', fullInfo);
+    
+            return {
+                ...consumable,
+                fullInfo, // Добавляем полную информацию о расходнике
+            };
+        } catch (error) {
+            console.error('Ошибка в getFullConsumableInfo:', error);
+            throw error;
+        }
+    }
+
     // Получение списка расходных материалов для ТО
     async getConsumablesByTOId(req, res) {
-        const { toId } = req.params;
+        const { id } = req.params;
 
         try {
-            const consumables = await TOService.getConsumablesByTOId(toId);
+            const consumables = await TOService.getConsumablesByTOId(parseInt(id, 10));
             res.status(200).json(consumables);
         } catch (error) {
             res.status(400).json({ message: error.message });
         }
     }
+
+    
 }
 
 export default new TOController();

@@ -22,4 +22,7 @@ router.get('/toCar/:carId', TOController.getTOHistoryByCarId); // Получен
 router.post('/to/:toId/consumables', TOController.addConsumables);
 router.get('/to/:id/consumables', TOController.getConsumablesByTOId); // Получение расходных материалов для ТО
 
+// Новый роут для получения полной информации о расходнике
+router.get('/consumable/:id', TOController.getFullConsumableInfo);
+
 export default router;

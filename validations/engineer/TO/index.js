@@ -144,6 +144,13 @@ const Schemas = {
         }),
     }),
 
+    addConsumablesSchema: Joi.object({
+        consumables: Joi.array().items(consumableSchema).required().messages({
+            'array.base': 'Расходные материалы должны быть массивом',
+            'any.required': 'Расходные материалы обязательны',
+        }),
+    }),
+
     completeTOSchema: Joi.object({
         description: Joi.string().min(3).max(500).required().messages({
             'string.base': 'Описание должно быть строкой',

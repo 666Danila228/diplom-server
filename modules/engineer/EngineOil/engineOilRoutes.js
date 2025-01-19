@@ -1,6 +1,6 @@
 import express from "express";
 import checkAuthMiddleware from "../../../utils/checkAuthMiddleware.js";
-import EngineOilController from "./EngineOilsController.js";
+import EngineOilController from "./engineOilController.js";
 // Добавь проверку на роль
 
 const router = express.Router();

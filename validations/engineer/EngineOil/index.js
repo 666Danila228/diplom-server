@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { checkRecordExists } from "../../../utils/checkRecordExists";
+import { checkRecordExists } from "../../../utils/checkRecordExists.js";
 
 const checkBrandEngineOilExists = async (name) => {
     await checkRecordExists('бренда маторного масла', 'brandEngineOil', 'name', name, false);
@@ -121,7 +121,7 @@ const Schemas = {
             'number.base': 'Срок службы должен быть числом',
             'number.positive': 'Срок службы должен быть положительным числом',
         }),
-        garage_id: Joi.number().required().external(checkGarageIdExists).messages({
+        garage_id: Joi.number().required().external(checkGarageIdExsists).messages({
             'number.base': 'garage_id должен быть числовым',
             'any.required': 'garage_id обязателен',
         }),
@@ -132,16 +132,16 @@ const Schemas = {
             'number.base': 'brand_id должен быть числовым',
             'any.required': 'brand_id обязателен'
         }),
-        model_id: Joi.number().required().external(checkModelIdExists).messages({
+        model_id: Joi.number().optional().external(checkModelIdExists).messages({
             'number.base': 'id должен быть числовым',
             'any.required': 'id обязателен'
         }),
-        type: Joi.string().valid('FULL_SYNTHETIC', 'SEMI_SYNTHETIC', 'MINERAL').required().messages({
+        type: Joi.string().valid('FULL_SYNTHETIC', 'SEMI_SYNTHETIC', 'MINERAL').optional().messages({
             'string.base': 'Тип тосола должен быть строкой',
             'any.required': 'Тип тосола обязателен',
             'any.only': 'Тип тосола должен быть одним из: Антифриз, Тосол, Концетрат',
         }),
-        volume: Joi.number().positive().required().messages({
+        volume: Joi.number().positive().optional().messages({
             'number.base': 'Объем тосола должен быть числом',
             'number.positive': 'Объем тосола должен быть положительным числом',
             'any.required': 'Объем тосола обязателен',
@@ -153,7 +153,7 @@ const Schemas = {
             'number.base': 'Срок службы должен быть числом',
             'number.positive': 'Срок службы должен быть положительным числом',
         }),
-        garage_id: Joi.number().required().external(checkGarageIdExists).messages({
+        garage_id: Joi.number().optional().external(checkGarageIdExsists).messages({
             'number.base': 'garage_id должен быть числовым',
             'any.required': 'garage_id обязателен',
         }),

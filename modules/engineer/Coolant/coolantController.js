@@ -1,6 +1,6 @@
 import BaseController from '../utils/baseController.js';
 import CoolantsService from './coolantService.js';
-// import Schemas from '../../../validations/engineer/Coolant/index.js';
+import Schemas from '../../../validations/engineer/Coolant/index.js';
 
 class CoolantController extends BaseController {
     // Бренд тасола
@@ -9,7 +9,7 @@ class CoolantController extends BaseController {
             req, res,
             (data) => CoolantsService.createBrandCoolant(data.name),
             'Бренд тасола',
-            Schemas.createBrandCoolantSchema
+            Schemas.createBrandCoolant
         );
     }
 

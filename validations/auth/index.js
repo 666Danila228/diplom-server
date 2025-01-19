@@ -11,6 +11,16 @@ const checkEmailExists = async (email) => {
   }
 };
 
+const checkEmailExistsLogin = async (email) => {
+  const existingUser = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!existingUser) {
+    throw new Joi.ValidationError('Неверный логин или пароль', [{ message: 'Неверный email или пароль', path: ['All'], type: 'email.exists' }], null);
+  }
+}
+
 export const registerSchema = Joi.object({
   surname: Joi.string().pattern(new RegExp('^[а-яА-Я]')).min(3).max(25).required().messages({
     'string.base': 'Фамилия пользователя должна быть строкой',
@@ -43,7 +53,7 @@ export const registerSchema = Joi.object({
   password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required().messages({
     'string.base': 'Пароль должен быть строкой',
     'string.empty': 'Пароль не может быть пустым',
-    'string.pattern.base': 'Пароль должен содержать только буквы и цифры',
+    'string.pattern.base': 'Пароль должен содержать только латинские буквы и цифры',
     'any.required': 'Пароль обязателен'
   })
 });
@@ -58,7 +68,7 @@ export const loginSchema = Joi.object({
   password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required().messages({
     'string.base': 'Пароль должен быть строкой',
     'string.empty': 'Пароль не может быть пустым',
-    'string.pattern.base': 'Пароль должен содержать только буквы и цифры',
+    'string.pattern.base': 'Пароль должен содержать только латинские буквы и цифры',
     'any.required': 'Пароль обязателен'
   })
 });

@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { checkRecordExists } from "../../../utils/checkRecordExists";
+import { checkRecordExists } from "../../../utils/checkRecordExists.js"; 
 
 const checkBrandCoolantExists = async (name) => {
     await checkRecordExists('бренда тасола', 'brandCoolant', 'name', name, false);
@@ -21,7 +21,7 @@ const checkModelIdExists = async (model_id) => {
     if (!model_id) {
         return;
     }
-    await checkRecordExists('модели тасола', 'modelTire', 'id', model_id, true);
+    await checkRecordExists('модели тасола', 'modelCoolant', 'id', model_id, true);
 }
 
 const checkCoolantIdExists = async (tire_id) => {
@@ -126,7 +126,7 @@ const Schemas = {
         composition: Joi.string().optional().messages({
             'string.base': 'Состав тосола должен быть строкой',
         }),
-        garage_id: Joi.number().required().external(checkGarageIdExists).messages({
+        garage_id: Joi.number().required().external(checkGarageIdExsists).messages({
             'number.base': 'garage_id должен быть числовым',
             'any.required': 'garage_id обязателен',
         }),
@@ -164,7 +164,7 @@ const Schemas = {
         composition: Joi.string().optional().messages({
             'string.base': 'Состав тосола должен быть строкой',
         }),
-        garage_id: Joi.number().required().external(checkGarageIdExists).messages({
+        garage_id: Joi.number().required().external(checkGarageIdExsists).messages({
             'number.base': 'garage_id должен быть числовым',
             'any.required': 'garage_id обязателен',
         }),

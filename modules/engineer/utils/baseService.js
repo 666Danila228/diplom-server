@@ -6,10 +6,7 @@ class BaseService {
 
     async createRecord(model, data, entityName, relationFields = []) {
         try {
-            if (data.name) {
-                await checkRecordExists(entityName, model, 'name', data.name, false);
-            }
-    
+
             const createData = { ...data };
             relationFields.forEach((field) => {
                 if (data[field]) {
@@ -18,11 +15,11 @@ class BaseService {
                     };
                 }
             });
-    
+
             const newRecord = await prisma[model].create({
                 data: createData,
             });
-    
+
             return newRecord;
         } catch (error) {
             console.error(error);
@@ -47,13 +44,26 @@ class BaseService {
         }
     }
 
-    async getRecordById(model, id, entityName) {
+    async getRecordById(model, id, entityName, relationFields = []) {
         try {
+            let include = {};
+
+            // Если relationFields — это объект, используем его как include
+            if (typeof relationFields === 'object' && !Array.isArray(relationFields)) {
+                include = relationFields;
+            }
+            // Если relationFields — это массив, преобразуем его в include
+            else if (Array.isArray(relationFields)) {
+                relationFields.forEach((field) => {
+                    include[field] = true;
+                });
+            }
+
             const record = await prisma[model].findUnique({
                 where: {
                     id: parseInt(id),
-                    // deletedAt: null,    !!!!!!!!ПОДУМАЙ НАДО ЛИ ЭТО!!!!!!!!
                 },
+                include: Object.keys(include).length > 0 ? include : undefined,
             });
 
             if (!record) {

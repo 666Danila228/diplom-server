@@ -39,7 +39,7 @@ class CoolantsService extends BaseService {
                 throw new Error(`Метод isRecordUsed не реализован для модели ${model}`);
         }
     }
-  
+
 
 
     // Бренд тасола
@@ -94,19 +94,49 @@ class CoolantsService extends BaseService {
     async deleteManyModelCoolants(ids) {
         return this.deleteManyRecords('modelCoolant', ids, 'Модели тасола');
     }
-    
+
     // тасолаа
 
     async createCoolant(data) {
-        return this.createRecord('Coolant', data, 'тасолаа', ['modelCoolant', 'garage']);
+        const coolant = await this.createRecord('Coolant', data, 'тасолаа', ['modelCoolant', 'garage']);
+        await this.createRecord('Consumable', { material_type: 'Coolant', material_id: coolant.id }, 'Расходный материал');
+        return coolant;
     }
 
     async getAllCoolants() {
-        return super.getAllRecords('Coolant');
+        const coolants = await super.getAllRecords('Coolant', {
+            include: {
+                ModelCoolant: {
+                    include: {
+                        brand: true,
+                    },
+                },
+            },
+        });
+    
+        return coolants.map((coolant) => ({
+            ...coolant,
+            modelName: coolant.ModelCoolant.name,
+            brandName: coolant.ModelCoolant.brand.name,
+            ModelCoolant: undefined, 
+        }));
     }
 
     async getCoolantById(id) {
-        return this.getRecordById('Coolant', id, 'тасолаа');
+        const coolant = await this.getRecordById('Coolant', parseInt(id), 'Тосол', {
+            ModelCoolant: { 
+                include: {
+                    brand: true,
+                },
+            },
+        });
+
+        return {
+            ...coolant,
+            modelName: coolant.ModelCoolant.name,
+            brandName: coolant.ModelCoolant.brand.name,
+            ModelCoolant: undefined,
+        };
     }
 
     async updateCoolant(id, data) {

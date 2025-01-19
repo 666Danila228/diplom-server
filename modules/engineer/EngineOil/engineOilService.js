@@ -98,7 +98,9 @@ class EngineOilsService extends BaseService {
     // Моторное масло
 
     async createEngineOil(data) {
-        return this.createRecord('EngineOil', data, 'Моторное масло', ['modelEngineOil', 'garage']);
+        const engineOil = await this.createRecord('EngineOil', data, 'Моторное масло', ['modelEngineOil', 'garage'])
+        await this.createRecord('Consumable', { material_type: 'EngineOil', material_id: engineOil.id }, 'Расходный материал')
+        return engineOil;
     }
 
     async getAllEngineOils() {
