@@ -1,4 +1,4 @@
-import BaseService from "../utils/baseService.js";
+import BaseService from "../../utils/baseService.js";
 import CoolantService from "../Coolant/coolantService.js";
 import EngineOilService from "../EngineOil/engineOilService.js";
 import prisma from "../../../prisma/prismaClient.js";

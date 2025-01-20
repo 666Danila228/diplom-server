@@ -1,4 +1,4 @@
-import BaseService from '../utils/baseService.js';
+import BaseService from '../../utils/baseService.js';
 import prisma from '../../../prisma/prismaClient.js';
 
 class CoolantsService extends BaseService {
@@ -47,14 +47,6 @@ class CoolantsService extends BaseService {
         return this.createRecord('brandCoolant', { name }, 'бренд тасола');
     }
 
-    async getAllBrandCoolants() {
-        return super.getAllRecords('brandCoolant');
-    }
-
-    async getBrandCoolantById(id) {
-        return this.getRecordById('brandCoolant', id, 'Бренд тасола');
-    }
-
     async updateBrandCoolant(id, name) {
         return this.updateRecord('brandCoolant', id, { name }, 'бренд тасола');
     }
@@ -72,14 +64,6 @@ class CoolantsService extends BaseService {
     // Модели тасола
     async createModelCoolant(data) {
         return this.createRecord('modelCoolant', data, 'модель тасола', ['BrandCoolant']);
-    }
-
-    async getAllModelCoolants() {
-        return super.getAllRecords('modelCoolant');
-    }
-
-    async getModelCoolantById(id) {
-        return this.getRecordById('modelCoolant', id, 'модель тасола');
     }
 
     async updateModelCoolant(id, data) {
@@ -101,42 +85,6 @@ class CoolantsService extends BaseService {
         const coolant = await this.createRecord('Coolant', data, 'тасолаа', ['modelCoolant', 'garage']);
         await this.createRecord('Consumable', { material_type: 'Coolant', material_id: coolant.id }, 'Расходный материал');
         return coolant;
-    }
-
-    async getAllCoolants() {
-        const coolants = await super.getAllRecords('Coolant', {
-            include: {
-                ModelCoolant: {
-                    include: {
-                        brand: true,
-                    },
-                },
-            },
-        });
-    
-        return coolants.map((coolant) => ({
-            ...coolant,
-            modelName: coolant.ModelCoolant.name,
-            brandName: coolant.ModelCoolant.brand.name,
-            ModelCoolant: undefined, 
-        }));
-    }
-
-    async getCoolantById(id) {
-        const coolant = await this.getRecordById('Coolant', parseInt(id), 'Тосол', {
-            ModelCoolant: { 
-                include: {
-                    brand: true,
-                },
-            },
-        });
-
-        return {
-            ...coolant,
-            modelName: coolant.ModelCoolant.name,
-            brandName: coolant.ModelCoolant.brand.name,
-            ModelCoolant: undefined,
-        };
     }
 
     async updateCoolant(id, data) {

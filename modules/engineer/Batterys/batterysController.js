@@ -1,4 +1,4 @@
-import BaseController from '../utils/baseController.js';
+import BaseController from '../../utils/baseController.js';
 import batteryService from './batterysService.js'; 
 import Schemas from '../../../validations/engineer/Battery/index.js';
 

@@ -1,4 +1,4 @@
-import BaseController from "../utils/baseController.js";
+import BaseController from "../../utils/baseController.js";
 import FuelCardService from "./fuelCardService.js";
 // import Schemas from "../../../validations/fuelCard/index.js";
 

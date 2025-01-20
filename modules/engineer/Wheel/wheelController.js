@@ -1,4 +1,4 @@
-import BaseController from "../utils/baseController.js";
+import BaseController from "../../utils/baseController.js";
 import WheelService from "./wheelService.js";
 // import Schemas from "../../../validations/";
 

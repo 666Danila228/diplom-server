@@ -1,5 +1,5 @@
 import Schemas from '../../../validations/engineer/Car/index.js';
-import BaseController from '../utils/baseController.js';
+import BaseController from '../../utils/baseController.js';
 import CarService from './carService.js';
 
 class CarController extends BaseController {

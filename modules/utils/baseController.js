@@ -1,4 +1,4 @@
-import { handleValidationError } from '../../../validations/errorHandler.js';
+import { handleValidationError } from '../../validations/errorHandler.js';
 
 class BaseController {
     async createRecord(req, res, serviceMethod, entityName, validationSchema) {

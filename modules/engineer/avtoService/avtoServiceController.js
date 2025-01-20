@@ -1,4 +1,4 @@
-import BaseController from "../utils/baseController.js";
+import BaseController from "../../utils/baseController.js";
 import AvtoServiceService from "./avtoServiceService.js";
 import Schemas from "../../../validations/engineer/AvtoService/index.js";
 

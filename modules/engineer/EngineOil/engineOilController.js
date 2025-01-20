@@ -1,4 +1,4 @@
-import BaseController from '../utils/baseController.js';
+import BaseController from '../../utils/baseController.js';
 import EngineOilsService from './engineOilService.js';
 import Schemas from '../../../validations/engineer/EngineOil/index.js';
 
@@ -13,17 +13,6 @@ class EngineOilController extends BaseController {
         );
     }
 
-    async getAllBrandEngineOils(req, res) {
-        await super.getAllRecords(req, res, EngineOilsService.getAllBrandEngineOils, 'брендов Моторных масел');
-    }
-
-    async getBrandEngineOilById(req, res) {
-        await super.getRecordById(
-            req, res,
-            (id) => EngineOilsService.getBrandEngineOilById(id),
-            'Бренд Моторных масел'
-        );
-    }
 
     async updateBrandEngineOil(req, res) {
         await super.updateRecord(
@@ -59,18 +48,6 @@ class EngineOilController extends BaseController {
             (data) => EngineOilsService.createModelEngineOil(data),
             'модель Моторных масел',
             Schemas.createModelEngineOil
-        );
-    }
-
-    async getAllModelEngineOils(req, res) {
-        await super.getAllRecords(req, res, EngineOilsService.getAllModelEngineOils, 'моделей Моторных масел');
-    }
-
-    async getModelEngineOilById(req, res) {
-        await super.getRecordById(
-            req, res,
-            (id) => EngineOilsService.getModelEngineOilById(id),
-            'модель Моторных масел'
         );
     }
 
@@ -111,17 +88,6 @@ class EngineOilController extends BaseController {
         )
     }
 
-    async getAllEngineOils(req, res) {
-        await super.getAllRecords(req, res, EngineOilsService.getAllEngineOils, 'Моторное масло');
-    }
-
-    async getEngineOilByid(req, res) {
-        await super.getRecordById(
-            req, res,
-            (id) => EngineOilsService.getEngineOilById(id),
-            'Моторных масела'
-        )
-    }
 
     async updateEngineOil(req, res) {
         await super.updateRecord(

@@ -1,4 +1,4 @@
-import BaseController from '../utils/baseController.js';
+import BaseController from '../../utils/baseController.js';
 import TiresService from './tiresService.js';
 import Schemas from '../../../validations/engineer/Tire/index.js';
 

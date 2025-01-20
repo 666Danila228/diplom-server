@@ -1,4 +1,4 @@
-import BaseService from '../utils/baseService.js';
+import BaseService from '../../utils/baseService.js';
 import prisma from '../../../prisma/prismaClient.js';
 
 class EngineOilsService extends BaseService {
@@ -47,14 +47,6 @@ class EngineOilsService extends BaseService {
         return this.createRecord('brandEngineOil', { name }, 'бренд Моторных масел');
     }
 
-    async getAllBrandEngineOils() {
-        return super.getAllRecords('brandEngineOil');
-    }
-
-    async getBrandEngineOilById(id) {
-        return this.getRecordById('brandEngineOil', id, 'Бренд Моторных масел');
-    }
-
     async updateBrandEngineOil(id, name) {
         return this.updateRecord('brandEngineOil', id, { name }, 'бренд Моторных масел');
     }
@@ -72,14 +64,6 @@ class EngineOilsService extends BaseService {
     // Модели Моторных масел
     async createModelEngineOil(data) {
         return this.createRecord('modelEngineOil', data, 'модель Моторных масел', ['BrandEngineOil']);
-    }
-
-    async getAllModelEngineOils() {
-        return super.getAllRecords('modelEngineOil');
-    }
-
-    async getModelEngineOilById(id) {
-        return this.getRecordById('modelEngineOil', id, 'модель Моторных масел');
     }
 
     async updateModelEngineOil(id, data) {
@@ -101,14 +85,6 @@ class EngineOilsService extends BaseService {
         const engineOil = await this.createRecord('EngineOil', data, 'Моторное масло', ['modelEngineOil', 'garage'])
         await this.createRecord('Consumable', { material_type: 'EngineOil', material_id: engineOil.id }, 'Расходный материал')
         return engineOil;
-    }
-
-    async getAllEngineOils() {
-        return super.getAllRecords('EngineOil');
-    }
-
-    async getEngineOilById(id) {
-        return this.getRecordById('EngineOil', id, 'Моторное масло');
     }
 
     async updateEngineOil(id, data) {

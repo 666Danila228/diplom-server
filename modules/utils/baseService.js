@@ -1,6 +1,6 @@
-import prisma from "../../../prisma/prismaClient.js";
-import { checkRecordExists } from "../../../utils/checkRecordExists.js";
-import { generateRelationsFromPrismaSchema } from "../../../utils/prismaRelations.js";
+import prisma from "../../prisma/prismaClient.js";
+import { checkRecordExists } from "../../utils/checkRecordExists.js";
+import { generateRelationsFromPrismaSchema } from "../../utils/prismaRelations.js";
 
 class BaseService {
 

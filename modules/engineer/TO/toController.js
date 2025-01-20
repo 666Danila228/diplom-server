@@ -1,5 +1,5 @@
 import Schemas from '../../../validations/engineer/TO/index.js'; // Импортируем схемы валидации
-import BaseController from '../utils/baseController.js';
+import BaseController from '../../utils/baseController.js';
 import TOService from './toService.js';
 
 class TOController extends BaseController {

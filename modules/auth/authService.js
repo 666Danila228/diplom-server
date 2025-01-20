@@ -5,7 +5,7 @@ import prisma from "../../prisma/prismaClient.js";
 import bcrypt from "bcrypt";
 import { use } from "bcrypt/promises.js";
 import jwt from "jsonwebtoken";
-import BaseService from "../engineer/utils/baseService.js";
+import BaseService from "../utils/baseService.js";
 
 class AuthService extends BaseService {
     // Регистрация пользователя
@@ -29,11 +29,14 @@ class AuthService extends BaseService {
                 },
             });
 
+            console.log(existingUser)
+
             // Проверка существует данный пользователь или нет
             if (!existingUser) {
                 throw new Error("Данного пользователя не существует");
             }
 
+            
             // Првоеряем полученный пароль с хэшированным паролем в бд
             const isValidPass = await bcrypt.compare(password, existingUser.password);
             if (!isValidPass) {
@@ -59,7 +62,7 @@ class AuthService extends BaseService {
         try {
             // Проверка подлинности токена
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
+            console.log('Декодированный токен:', decoded);
             // Поиск пользователя в базе данных
             const user = await prisma.user.findUnique({
                 where: { id: decoded.userId },
@@ -111,6 +114,7 @@ class AuthService extends BaseService {
             jwt_token_version: user.jwt_token_version,
         };
 
+            console.log(payload)
         // Время жизни токена
         const options = {
             expiresIn: '1h',

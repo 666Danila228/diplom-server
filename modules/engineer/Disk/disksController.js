@@ -1,4 +1,4 @@
-import BaseController from '../utils/baseController.js';
+import BaseController from '../../utils/baseController.js';
 import DiskService from './disksService.js'; 
 import Schemas from '../../../validations/engineer/Disk/index.js';
 
