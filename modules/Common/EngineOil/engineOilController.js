@@ -47,6 +47,8 @@ class EngineOilController extends BaseController {
             take: take ? parseInt(take) : undefined,
         };
 
+        console.log('Options:', options); // Логирование параметров запроса
+
         await super.getAllRecords(req, res, () => EngineOilsService.getAllEngineOils(options), 'Моторное масло');
     }
 
