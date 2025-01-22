@@ -47,14 +47,6 @@ class TiresService extends BaseService {
         return this.createRecord('brandTire', { name }, 'бренд шин');
     }
 
-    async getAllBrandTires(options = {}) {
-        return super.getAllRecords('brandTire', options);
-    }
-
-    async getBrandTireById(id) {
-        return this.getRecordById('brandTire', id, 'Бренд шин');
-    }
-
     async updateBrandTire(id, name) {
         return this.updateRecord('brandTire', id, { name }, 'бренд шин');
     }
@@ -74,14 +66,6 @@ class TiresService extends BaseService {
         return this.createRecord('modelTire', data, 'модель шин', ['BrandTire']);
     }
 
-    async getAllModelTires(options = {}) {
-        return super.getAllRecords('modelTire', options);
-    }
-
-    async getModelTireById(id) {
-        return this.getRecordById('modelTire', id, 'модель шин');
-    }
-
     async updateModelTire(id, data) {
         return this.updateRecord('modelTire', id, data, 'модель шин', ['BrandTire']);
     }
@@ -99,14 +83,6 @@ class TiresService extends BaseService {
 
     async createTire(data) {
         return this.createRecord('tire', data, 'шина', ['modelTire', 'garage']);
-    }
-
-    async getAllTires(options = {}) {
-        return super.getAllRecords('tire', options);
-    }
-
-    async getTireById(id) {
-        return this.getRecordById('tire', id, 'шина');
     }
 
     async updateTire(id, data) {

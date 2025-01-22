@@ -10,7 +10,7 @@ class authController extends BaseController {
     async registerUser(req, res) {
         const data = req.body;
         await super.createRecord(req, res,
-            () => AuthService.createUacser(data), 'пользователь', registerSchema);
+            () => AuthService.createUser(data), 'пользователь', registerSchema);
     }
 
 }

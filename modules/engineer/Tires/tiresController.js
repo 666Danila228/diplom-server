@@ -14,33 +14,6 @@ class TireController extends BaseController {
         );
     }
 
-    async getAllBrandTires(req, res) {
-        const { where, orderBy, include, skip, take } = req.query;
-
-        const options = {
-            where: where ? JSON.parse(where) : undefined,
-            orderBy: orderBy ? JSON.parse(orderBy) : undefined,
-            include: include ? JSON.parse(include) : undefined,
-            skip: skip ? parseInt(skip) : undefined,
-            take: take ? parseInt(take) : undefined,
-        };
-
-        await super.getAllRecords(
-            req, res,
-            () => TiresService.getAllBrandTires(options),
-            'брендов шин'
-        );
-    }
-
-    async getBrandTireById(req, res) {
-        const { id } = req.params;
-        await super.getRecordById(
-            req, res,
-            () => TiresService.getBrandTireById(id),
-            'Бренд шин'
-        );
-    }
-
     async updateBrandTire(req, res) {
         const { id } = req.params;
         const { name } = req.body;
@@ -81,33 +54,6 @@ class TireController extends BaseController {
         );
     }
 
-    async getAllModelTires(req, res) {
-        const { where, orderBy, include, skip, take } = req.query;
-    
-        const options = {
-            where: where ? JSON.parse(where) : undefined,
-            orderBy: orderBy ? JSON.parse(orderBy) : undefined,
-            include: include ? JSON.parse(include) : undefined,
-            skip: skip ? parseInt(skip) : undefined,
-            take: take ? parseInt(take) : undefined,
-        };
-    
-        await super.getAllRecords(
-            req, res,
-            () => TiresService.getAllModelTires(options), // Передаем функцию, а не результат
-            'моделей шин'
-        );
-    }
-
-    async getModelTireById(req, res) {
-        const { id } = req.params;
-        await super.getRecordById(
-            req, res,
-            () => TiresService.getModelTireById(id),
-            'модель шин'
-        );
-    }
-
     async updateModelTire(req, res) {
         const { id } = req.params;
         const data = req.body;
@@ -145,33 +91,6 @@ class TireController extends BaseController {
             () => TiresService.createTire(data),
             'шина',
             Schemas.createTire
-        );
-    }
-
-    async getAllTires(req, res) {
-        const { where, orderBy, include, skip, take } = req.query;
-    
-        const options = {
-            where: where ? JSON.parse(where) : undefined,
-            orderBy: orderBy ? JSON.parse(orderBy) : undefined,
-            include: include ? JSON.parse(include) : undefined,
-            skip: skip ? parseInt(skip) : undefined,
-            take: take ? parseInt(take) : undefined,
-        };
-    
-        await super.getAllRecords(
-            req, res,
-            () => TiresService.getAllTires(options), // Передаем функцию, а не результат
-            'шины'
-        );
-    }
-
-    async getTireById(req, res) {
-        const { id } = req.params;
-        await super.getRecordById(
-            req, res,
-            () => TiresService.getTireById(id),
-            'шина'
         );
     }
 

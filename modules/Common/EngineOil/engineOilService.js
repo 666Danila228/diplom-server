@@ -60,26 +60,21 @@ class EngineOilsService extends BaseService {
             },
         };
 
-        // Проверяем, что where является объектом
         if (options.where && typeof options.where !== 'object') {
             throw new Error('Параметр where должен быть объектом');
         }
 
-        // Если where передан, корректируем фильтры
         if (options.where) {
             for (const key in options.where) {
                 if (key === 'lifespan' && typeof options.where[key] === 'number') {
-                    // Для числовых полей используем equals
                     options.where[key] = {
                         equals: options.where[key],
                     };
                 } else if (key === 'type' && typeof options.where[key] === 'string') {
-                    // Для enum используем оператор equals
                     options.where[key] = {
                         equals: options.where[key],
                     };
                 } else if (typeof options.where[key] === 'string') {
-                    // Для строк используем contains
                     options.where[key] = {
                         contains: options.where[key],
                         mode: 'insensitive',
@@ -88,20 +83,18 @@ class EngineOilsService extends BaseService {
             }
         }
 
-        // Объединяем include из defaultOptions и options
         const mergedInclude = {
             ...defaultOptions.include,
             ...(options.include || {}),
         };
 
-        // Создаем finalOptions
         const finalOptions = {
             ...defaultOptions,
             ...options,
             include: mergedInclude,
         };
 
-        console.log('Final Options:', finalOptions); // Логирование для отладки
+        console.log('Final Options:', finalOptions); 
 
         const engineOils = await super.getAllRecords('EngineOil', finalOptions);
 

@@ -37,18 +37,20 @@ class CoolantsService extends BaseService {
     // тасолаа
     async getAllCoolants() {
         const coolants = await super.getAllRecords('Coolant', {
-            ModelCoolant: {
-                include: {
-                    brand: true,
+            include: {
+                ModelCoolant: {
+                    include: {
+                        brand: true, // Включаем бренд
+                    },
                 },
             },
         });
-
+    
         return coolants.map((coolant) => ({
             ...coolant,
-            modelName: coolant.ModelCoolant.name,
-            brandName: coolant.ModelCoolant.brand.name,
-            ModelCoolant: undefined,
+            modelName: coolant.ModelCoolant?.name,
+            brandName: coolant.ModelCoolant?.brand?.name,
+            ModelCoolant: undefined, 
         }));
     }
 
