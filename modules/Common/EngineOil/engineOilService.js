@@ -17,7 +17,46 @@ const mapOilType = (type) => {
 class EngineOilsService extends BaseService {
     // Бренды
     async getAllBrandEngineOils(options = {}) {
-        return super.getAllRecords('brandEngineOil');
+        const defaultOptions = {
+            include: {
+                // Включите сюда необходимые связи, если они есть
+            },
+        };
+    
+        if (options.where && typeof options.where !== 'object') {
+            throw new Error('Параметр where должен быть объектом');
+        }
+    
+        if (options.where) {
+            for (const key in options.where) {
+                if (typeof options.where[key] === 'string') {
+                    options.where[key] = {
+                        contains: options.where[key],
+                        mode: 'insensitive',
+                    };
+                }
+            }
+        }
+    
+        const mergedInclude = {
+            ...defaultOptions.include,
+            ...(options.include || {}),
+        };
+    
+        const finalOptions = {
+            ...defaultOptions,
+            ...options,
+            include: mergedInclude,
+        };
+    
+        console.log('Final Options:', finalOptions);
+    
+        const brandEngineOils = await super.getAllRecords('brandEngineOil', finalOptions);
+    
+        return brandEngineOils.map((brand) => ({
+            ...brand,
+            // Добавьте дополнительные поля, если необходимо
+        }));
     }
 
     async getBrandEngineOilById(id) {
@@ -27,12 +66,48 @@ class EngineOilsService extends BaseService {
 
     // Модели Моторных масел
 
-    async getAllModelEngineOils() {
-        const modelEngineOils = await super.getAllRecords('modelEngineOil', { include: { brand: true, }, });
+    async getAllModelEngineOils(options = {}) {
+        const defaultOptions = {
+            include: {
+                brand: true,
+            },
+        };
+    
+        if (options.where && typeof options.where !== 'object') {
+            throw new Error('Параметр where должен быть объектом');
+        }
+    
+        if (options.where) {
+            for (const key in options.where) {
+                if (typeof options.where[key] === 'string') {
+                    options.where[key] = {
+                        contains: options.where[key],
+                        mode: 'insensitive',
+                    };
+                }
+            }
+        }
+    
+        const mergedInclude = {
+            ...defaultOptions.include,
+            ...(options.include || {}),
+        };
+    
+        const finalOptions = {
+            ...defaultOptions,
+            ...options,
+            include: mergedInclude,
+        };
+    
+        console.log('Final Options:', finalOptions);
+    
+        const modelEngineOils = await super.getAllRecords('modelEngineOil', finalOptions);
+    
         return modelEngineOils.map((model) => ({
             ...model,
+            brand: undefined,
             brandName: model.brand.name,
-        }))
+        }));
     }
 
     async getModelEngineOilById(id) {

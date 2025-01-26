@@ -14,20 +14,31 @@ class GarageService extends BaseService {
                 },
             },
         };
-
+    
+        if (options.where && typeof options.where === 'object') {
+            for (const key in options.where) {
+                if (typeof options.where[key] === 'string') {
+                    options.where[key] = {
+                        contains: options.where[key],
+                        mode: 'insensitive',
+                    };
+                }
+            }
+        }
+    
         const mergedInclude = {
             ...defaultOptions.include,
             ...(options.include || {}),
         };
-
+    
         const finalOptions = {
             ...defaultOptions,
             ...options,
             include: mergedInclude,
         };
-
+    
         console.log('Final Options:', finalOptions);
-
+    
         return super.getAllRecords('garage', finalOptions);
     }
 

@@ -12,18 +12,6 @@ class AvtoServiceController extends BaseController {
         );
     }
 
-    async getAllAvtoService(req, res) {
-        await super.getAllRecords(req, res, AvtoServiceService.getAllAvtoService, 'автосервисы');
-    }
-
-    async getAvtoServiceById(req, res) {
-        await super.getRecordById(
-            req, res,
-            (id) => AvtoServiceService.getAvtoServiceById(id),
-            'автосервис'
-        );
-    }
-
     async updateAvtoService(req, res) {
         await super.updateRecord(
             req, res,

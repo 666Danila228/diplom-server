@@ -1,14 +1,14 @@
 import Joi from 'joi';
 import prisma from '../../prisma/prismaClient.js';
+import { checkRecordExists } from '../../utils/checkRecordExists.js';
 
 const checkEmailExists = async (email) => {
-  const existingUser = await prisma.user.findUnique({
-    where: { email },
-  });
+  await checkRecordExists('Пользователь', 'user', 'email', email, false);
+};
 
-  if (existingUser) {
-    throw new Joi.ValidationError('Email уже занят', [{ message: 'Email уже занят', path: ['email'], type: 'email.exists' }], null);
-  }
+const checkRoleId = async (role_id) => {
+  if (!role_id) return;
+    await checkRecordExists('Роль', 'role', 'id', role_id, true);
 };
 
 const checkEmailExistsLogin = async (email) => {
@@ -55,6 +55,9 @@ export const registerSchema = Joi.object({
     'string.empty': 'Пароль не может быть пустым',
     'string.pattern.base': 'Пароль должен содержать только латинские буквы и цифры',
     'any.required': 'Пароль обязателен'
+  }),
+  role_id: Joi.number().optional().external(checkRoleId).messages({
+    'number.base': 'id должен быть числовым',
   })
 });
 

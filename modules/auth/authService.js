@@ -1,27 +1,23 @@
-// ==================================================
-// ||                 Импорты                      ||
-// ==================================================
+import BaseService from "../utils/baseService.js";
 import prisma from "../../prisma/prismaClient.js";
 import bcrypt from "bcrypt";
-import { use } from "bcrypt/promises.js";
 import jwt from "jsonwebtoken";
-import BaseService from "../utils/baseService.js";
 
 class AuthService extends BaseService {
     // Регистрация пользователя
     async createUser(data) {
         const hashedPassword = await bcrypt.hash(data.password, 10);
-        return this.createRecord('user', {
+        return super.createRecord('user', {
             ...data,
             password: hashedPassword,
-        }, 'пользователь'); // Указываем, что проверка должна быть по email
+            avatar: data.avatar || 'uploads/users/default-avatar.png',
+        }, 'пользователь');
     }
 
-    //Авторизация   
+    // Авторизация пользователя
     async loginUser(email, password) {
         try {
-
-            // Поиск пользователей по email и проверка на "мягкое" удаление
+            // Поиск пользователя по email
             const existingUser = await prisma.user.findUnique({
                 where: {
                     email: email,
@@ -29,51 +25,37 @@ class AuthService extends BaseService {
                 },
             });
 
-            console.log(existingUser)
-
-            // Проверка существует данный пользователь или нет
             if (!existingUser) {
                 throw new Error("Данного пользователя не существует");
             }
 
-            
-            // Првоеряем полученный пароль с хэшированным паролем в бд
+            // Проверка пароля
             const isValidPass = await bcrypt.compare(password, existingUser.password);
             if (!isValidPass) {
-                throw new Error("Невераня почта или пароль");
+                throw new Error("Неверная почта или пароль");
             }
 
-            // Создание токена
+            // Генерация токенов
             const token = this.generateToken(existingUser);
-
-            // Обновление рефрештокена в бд
             const refreshToken = await this.generateRefreshToken(existingUser);
 
-            // Возвращение токена и рефрештокена
             return { token, refreshToken, existingUser };
         } catch (error) {
             console.error(error);
             throw error;
         }
     }
-    
-     // Проверка авторизации
+
+    // Проверка авторизации
     async checkAuth(token) {
         try {
-            // Проверка подлинности токена
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            console.log('Декодированный токен:', decoded);
-            // Поиск пользователя в базе данных
-            const user = await prisma.user.findUnique({
-                where: { id: decoded.userId },
-            });
+            const user = await super.getRecordById('user', decoded.userId, 'пользователь');
 
-            // Проверка, существует ли пользователь и совпадает ли версия токена
             if (!user || user.jwt_token_version !== decoded.jwt_token_version) {
                 throw new Error("Токен недействителен");
             }
 
-            // Возвращение данных пользователя
             return user;
         } catch (error) {
             console.error(error);
@@ -81,32 +63,22 @@ class AuthService extends BaseService {
         }
     }
 
-    // Выход
-    // Удаляем у пользователя рефреш токен и время его жизни и дабавляем икремент к версии токена
+    // Выход пользователя
     async logoutUser(userId) {
         try {
-            await prisma.user.update({
-                where: { id: userId },
-                data: {
-                    jwt_token_version: { increment: 1 },
-                    refresh_token: null,
-                    refresh_token_expires_at: null,
-                }
-            });
+            await super.updateRecord('user', userId, {
+                jwt_token_version: { increment: 1 },
+                refresh_token: null,
+                refresh_token_expires_at: null,
+            }, 'пользователь');
         } catch (error) {
-            console.log(error);
+            console.error(error);
             throw new Error("Ошибка при выходе");
         }
     }
 
-    // ==================================================
-    // ||                   Токен                      ||
-    // ==================================================
-
-    // Напиши кто что делает
-    // Функция для генерация токена которая получает объёкт user в качестве аргумента
+    // Генерация токена
     generateToken(user) {
-        // Данные хранящиеся в токене
         const payload = {
             userId: user.id,
             email: user.email,
@@ -114,18 +86,14 @@ class AuthService extends BaseService {
             jwt_token_version: user.jwt_token_version,
         };
 
-            console.log(payload)
-        // Время жизни токена
         const options = {
             expiresIn: '1h',
         };
 
-        // Возвращение созданного токена
-        return jwt.sign(payload, process.env.JWT_SECRET, options)
+        return jwt.sign(payload, process.env.JWT_SECRET, options);
     }
 
-    // Напиши кто что делает
-    // Функциия для генерации рефрештокена
+    // Генерация refresh-токена
     async generateRefreshToken(user) {
         const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
             expiresIn: '7d',
@@ -134,26 +102,19 @@ class AuthService extends BaseService {
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + 7);
 
-        // Добавление нового рефрештокена
-        await prisma.user.update({
-            where: { id: user.id },
-            data: {
-                refresh_token: refreshToken,
-                refresh_token_expires_at: expiresAt,
-            },
-        });
+        await super.updateRecord('user', user.id, {
+            refresh_token: refreshToken,
+            refresh_token_expires_at: expiresAt,
+        }, 'пользователь');
 
         return refreshToken;
     }
 
-    // Напиши кто что делает
-    // Функция для обновления токена
+    // Обновление токена
     async refreshToken(refreshToken) {
         try {
-            const decode = jwt.verify(refreshToken, process.env.JWT_SECRET);
-            const user = await prisma.user.findUnique({
-                where: { id: decode.userId },
-            });
+            const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+            const user = await super.getRecordById('user', decoded.userId, 'пользователь');
 
             if (!user || user.refresh_token !== refreshToken) {
                 throw new Error("Недействительный рефреш токен");
@@ -167,17 +128,13 @@ class AuthService extends BaseService {
         }
     }
 
-    // Напиши кто что делает
-    // Функция для отзывания рефрештокена
+    // Отзыв токенов
     async revokeTokens(userId) {
-        await prisma.user.update({
-            where: { id: userId },
-            data: {
-                jwt_token_version: { increment: 1 },
-                refresh_token: null,
-                refresh_token_expires_at: null,
-            },
-        });
+        await super.updateRecord('user', userId, {
+            jwt_token_version: { increment: 1 },
+            refresh_token: null,
+            refresh_token_expires_at: null,
+        }, 'пользователь');
     }
 }
 

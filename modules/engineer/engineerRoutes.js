@@ -5,7 +5,7 @@ import diskRoutes from "./Disk/disksRoutes.js";
 import wheelRoutes from "./Wheel/wheelRoutes.js";
 import EngineOil from "./EngineOil/engineOilRoutes.js"
 import coolerRoutes from "./Coolant/coolantRoutes.js"
-import avtoServiceRoutes from "./avtoService/avtoServiceRoutes.js";
+
 import carRoutes from "./Car/carRoutes.js";
 import fuelCardRoutes from "./FuelCard/fuelCardRoutes.js";
 import TORoutes from "./TO/toRoutes.js";
@@ -18,7 +18,6 @@ router.use('/', diskRoutes);
 router.use('/', wheelRoutes);
 router.use('/', EngineOil);
 router.use('/', coolerRoutes);
-router.use('/', avtoServiceRoutes);
 router.use('/', carRoutes);
 router.use('/', fuelCardRoutes);
 router.use('/', TORoutes);

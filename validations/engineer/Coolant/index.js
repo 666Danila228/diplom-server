@@ -78,7 +78,25 @@ const Schemas = {
             'string.max': 'Название модели должно быть не больше {#limit} символов',
             'string.pattern.base': 'Название модели должно содержать только латинские буквы и цифры',
             'any.required': 'Название модели обязателен'
-        })
+        }),
+        type: Joi.string().valid('ANTIFREEZE', 'TOXOL', 'CONCENTRATE').required().messages({
+            'string.base': 'Тип тосола должен быть строкой',
+            'any.required': 'Тип тосола обязателен',
+            'any.only': 'Тип тосола должен быть одним из: Антифриз, Тосол, Концетрат',
+        }),
+        expiration_date: Joi.date().iso().optional().messages({
+            'date.base': 'Срок годности должен быть датой',
+            'date.format': 'Срок годности должен быть в формате ISO (YYYY-MM-DD)',
+        }),
+        freezing_point: Joi.number().optional().messages({
+            'number.base': 'Температура замерзания должна быть числом',
+        }),
+        boiling_point: Joi.number().optional().messages({
+            'number.base': 'Температура кипения должна быть числом',
+        }),
+        composition: Joi.string().optional().messages({
+            'string.base': 'Состав тосола должен быть строкой',
+        }),
     }),
 
     updateModelCoolantSchema: Joi.object({
@@ -96,22 +114,10 @@ const Schemas = {
             'string.max': 'Название бренда должна быть не больше {#limit} сиволов',
             'string.pattern.base': 'Название бренда должно содержать только латинские буквы и цифры',
         }).optional(),
-    }),
-
-    createCoolant: Joi.object({
-        model_id: Joi.number().required().external(checkModelIdExists).messages({
-            'number.base': 'id должен быть числовым',
-            'any.required': 'id обязателен'
-        }),
         type: Joi.string().valid('ANTIFREEZE', 'TOXOL', 'CONCENTRATE').required().messages({
             'string.base': 'Тип тосола должен быть строкой',
             'any.required': 'Тип тосола обязателен',
             'any.only': 'Тип тосола должен быть одним из: Антифриз, Тосол, Концетрат',
-        }),
-        volume: Joi.number().positive().required().messages({
-            'number.base': 'Объем тосола должен быть числом',
-            'number.positive': 'Объем тосола должен быть положительным числом',
-            'any.required': 'Объем тосола обязателен',
         }),
         expiration_date: Joi.date().iso().optional().messages({
             'date.base': 'Срок годности должен быть датой',
@@ -125,6 +131,19 @@ const Schemas = {
         }),
         composition: Joi.string().optional().messages({
             'string.base': 'Состав тосола должен быть строкой',
+        }),
+    }),
+
+    createCoolant: Joi.object({
+        model_id: Joi.number().required().external(checkModelIdExists).messages({
+            'number.base': 'id должен быть числовым',
+            'any.required': 'id обязателен'
+        }),
+        
+        volume: Joi.number().positive().required().messages({
+            'number.base': 'Объем тосола должен быть числом',
+            'number.positive': 'Объем тосола должен быть положительным числом',
+            'any.required': 'Объем тосола обязателен',
         }),
         garage_id: Joi.number().required().external(checkGarageIdExsists).messages({
             'number.base': 'garage_id должен быть числовым',
@@ -141,28 +160,10 @@ const Schemas = {
             'number.base': 'id должен быть числовым',
             'any.required': 'id обязателен'
         }),
-        type: Joi.string().valid('ANTIFREEZE', 'TOXOL', 'CONCENTRATE').required().messages({
-            'string.base': 'Тип тосола должен быть строкой',
-            'any.required': 'Тип тосола обязателен',
-            'any.only': 'Тип тосола должен быть одним из: Антифриз, Тосол, Концетрат',
-        }),
         volume: Joi.number().positive().required().messages({
             'number.base': 'Объем тосола должен быть числом',
             'number.positive': 'Объем тосола должен быть положительным числом',
             'any.required': 'Объем тосола обязателен',
-        }),
-        expiration_date: Joi.date().iso().optional().messages({
-            'date.base': 'Срок годности должен быть датой',
-            'date.format': 'Срок годности должен быть в формате ISO (YYYY-MM-DD)',
-        }),
-        freezing_point: Joi.number().optional().messages({
-            'number.base': 'Температура замерзания должна быть числом',
-        }),
-        boiling_point: Joi.number().optional().messages({
-            'number.base': 'Температура кипения должна быть числом',
-        }),
-        composition: Joi.string().optional().messages({
-            'string.base': 'Состав тосола должен быть строкой',
         }),
         garage_id: Joi.number().required().external(checkGarageIdExsists).messages({
             'number.base': 'garage_id должен быть числовым',
