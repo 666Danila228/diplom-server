@@ -13,18 +13,6 @@ class DiskController extends BaseController {
         );
     }
 
-    async getAllBrandDisks(req, res) {
-        await super.getAllRecords(req, res, DiskService.getAllBrandDisk, 'брендов шин');
-    }
-
-    async getBrandDiskById(req, res) {
-        await super.getRecordById(
-            req, res,
-            (id) => DiskService.getBrandDiskById(id),
-            'Бренд шин'
-        );
-    }
-
     async updateBrandDisk(req, res) {
         await super.updateRecord(
             req, res,
@@ -62,18 +50,6 @@ class DiskController extends BaseController {
         );
     }
 
-    async getAllModelDisks(req, res) {
-        await super.getAllRecords(req, res, DiskService.getAllModelDisks, 'моделей шин');
-    }
-
-    async getModelDiskById(req, res) {
-        await super.getRecordById(
-            req, res,
-            (id) => DiskService.getModelDiskById(id),
-            'модель шин'
-        );
-    }
-
     async updateModelDisk(req, res) {
         await super.updateRecord(
             req, res,
@@ -108,18 +84,6 @@ class DiskController extends BaseController {
             (data) => DiskService.createDisk(data),
             'шина',
             Schemas.createDisk
-        )
-    }
-
-    async getAllDisks(req, res) {
-        await super.getAllRecords(req, res, DiskService.getAllDisks, 'дисков');
-    }
-
-    async getDiskByid(req, res) {
-        await super.getRecordById(
-            req, res,
-            (id) => DiskService.getDiskById(id),
-            'шина'
         )
     }
 

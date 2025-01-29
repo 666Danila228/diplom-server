@@ -83,7 +83,8 @@ class CoolantsService extends BaseService {
 
     async createCoolant(data) {
         const coolant = await this.createRecord('Coolant', data, 'тасолаа', ['modelCoolant', 'garage']);
-        await this.createRecord('Consumable', { material_type: 'Coolant', material_id: coolant.id }, 'Расходный материал');
+        console.log()
+        await this.createRecord('Consumable', { material_type: 'Coolant', coolant_id: coolant.id }, 'Расходный материал');
         return coolant;
     }
 
@@ -104,10 +105,10 @@ class CoolantsService extends BaseService {
         const CoolantOnDisk = await prisma.CoolantOnDisk.findFirst({
             where: {
                 Coolant_id: parseInt(CoolantId),
-                status: 'IN_USE', // Проверяем только активные записи
+                status: 'IN_USE',
             },
         });
-        return !!CoolantOnDisk; // Возвращает true, если тасолаа используется
+        return !!CoolantOnDisk; 
     }
 
     async CoolantWriteOff(data) {

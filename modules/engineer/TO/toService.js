@@ -230,7 +230,6 @@ class TOService extends BaseService {
                         brand: true,
                     },
                 },
-                // Добавьте другие типы расходников, если они есть
             },
         });
     }

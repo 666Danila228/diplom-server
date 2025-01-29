@@ -12,7 +12,7 @@ import upload from '../../utils/upload.js';
 const router = express.Router();
 
 // Пост запрос регистрации пользователя
-router.post('/register', upload.single('avatar'), AuthController.registerUser);
+router.post('/register', AuthController.registerUser);
 
 // Пост запрос авторизации пользователя
 router.post('/login', AuthController.loginUser);

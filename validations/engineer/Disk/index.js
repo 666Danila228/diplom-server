@@ -71,14 +71,29 @@ const Schemas = {
             'number.base': 'brand_id должен быть числовым',
             'any.required': 'brand_id обязателен'
         }),
-        name: Joi.string().min(3).max(25).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required().external(checkModelDiskExists).messages({
+        name: Joi.string().min(3).max(25).pattern(new RegExp('^[a-zA-Zа-яА-Я0-9\\s]{3,30}$')).required().external(checkModelDiskExists).messages({
             'string.base': 'Название модели должно быть строкой',
             'string.empty': 'Название модели не может быть пустым',
             'string.min': 'Название модели должно быть не менее {#limit} символов',
             'string.max': 'Название модели должно быть не больше {#limit} символов',
             'string.pattern.base': 'Название модели должно содержать только латинские буквы и цифры',
             'any.required': 'Название модели обязателен'
-        })
+        }),
+        material: Joi.string().min(2).max(25).messages({
+            'string.base': 'Название материала должна быть строкой',
+            'string.empty': 'Название материала не может быть пустым',
+            'string.min': 'Название материала должна быть не менее {#limit} сиволов',
+            'string.max': 'Название материала должна быть не больше {#limit} сиволов',
+        }),
+        size: Joi.string().min(9).max(15).pattern(new RegExp('^\\d{3}/\\d{2}R\\d{2}$')).required().messages({
+            'string.base': 'Размер должен быть сторокй',
+            'string.empty': 'Размер не может быть пустым',
+            'string.min': 'Размер должен быть не менее {#limit} символов',
+            'string.max': 'Размер должен быть не больше {#limit} символов',
+            'string.pattern.base': 'Размер должен соответсвовать формату XXX/XXRXX',
+            'any.required': 'Размер обязателен'
+        }),
+
     }),
 
     updateModelDiskSchema: Joi.object({
@@ -96,12 +111,11 @@ const Schemas = {
             'string.max': 'Название бренда должна быть не больше {#limit} сиволов',
             'string.pattern.base': 'Название бренда должно содержать только латинские буквы и цифры',
         }).optional(),
-    }),
-
-    createDisk: Joi.object({
-        model_id: Joi.number().required().external(checkModelIdExists).messages({
-            'number.base': 'id должен быть числовым',
-            'any.required': 'id обязателен'
+        material: Joi.string().min(2).max(25).messages({
+            'string.base': 'Название материала должна быть строкой',
+            'string.empty': 'Название материала не может быть пустым',
+            'string.min': 'Название материала должна быть не менее {#limit} сиволов',
+            'string.max': 'Название материала должна быть не больше {#limit} сиволов',
         }),
         size: Joi.string().min(9).max(15).pattern(new RegExp('^\\d{3}/\\d{2}R\\d{2}$')).required().messages({
             'string.base': 'Размер должен быть сторокй',
@@ -111,12 +125,15 @@ const Schemas = {
             'string.pattern.base': 'Размер должен соответсвовать формату XXX/XXRXX',
             'any.required': 'Размер обязателен'
         }),
-        material: Joi.string().min(2).max(25).messages({
-            'string.base': 'Название материала должна быть строкой',
-            'string.empty': 'Название материала не может быть пустым',
-            'string.min': 'Название материала должна быть не менее {#limit} сиволов',
-            'string.max': 'Название материала должна быть не больше {#limit} сиволов',
+    }),
+
+    createDisk: Joi.object({
+        model_id: Joi.number().required().external(checkModelIdExists).messages({
+            'number.base': 'id должен быть числовым',
+            'any.required': 'id обязателен'
         }),
+        
+        
         garage_id: Joi.number().required().external(checkGarageIdExsists).messages({
             'number.base': 'garage_id должен быть числовым',
             'any.required': 'garege_id обязателен'
@@ -137,21 +154,7 @@ const Schemas = {
         model_id: Joi.number().required().external(checkModelIdExists).messages({
             'number.base': 'id должен быть числовым',
             'any.required': 'id обязателен'
-        }),
-        size: Joi.string().min(9).max(15).pattern(new RegExp('^\\d{3}/\\d{2}R\\d{2}$')).required().messages({
-            'string.base': 'Размер должен быть сторокй',
-            'string.empty': 'Размер не может быть пустым',
-            'string.min': 'Размер должен быть не менее {#limit} символов',
-            'string.max': 'Размер должен быть не больше {#limit} символов',
-            'string.pattern.base': 'Размер должен соответсвовать формату XXX/XXRXX',
-            'any.required': 'Размер обязателен'
-        }),
-        material: Joi.string().min(2).max(25).messages({
-            'string.base': 'Название материала должна быть строкой',
-            'string.empty': 'Название материала не может быть пустым',
-            'string.min': 'Название материала должна быть не менее {#limit} сиволов',
-            'string.max': 'Название материала должна быть не больше {#limit} сиволов',
-        }),
+        }),       
         garage_id: Joi.number().required().external(checkGarageIdExsists).messages({
             'number.base': 'garage_id должен быть числовым',
             'any.required': 'garege_id обязателен'
@@ -163,8 +166,6 @@ const Schemas = {
             'any.required': 'Серийный номер обязателен',
         })
     })
-
-
 }
 
 export default Schemas;

@@ -13,18 +13,6 @@ class BatteryController extends BaseController {
         );
     }
 
-    async getAllBrandbatterys(req, res) {
-        await super.getAllRecords(req, res, batteryService.getAllBrandbattery, 'брендов шин');
-    }
-
-    async getBrandbatteryById(req, res) {
-        await super.getRecordById(
-            req, res,
-            (id) => batteryService.getBrandbatteryById(id),
-            'Бренд шин'
-        );
-    }
-
     async updateBrandbattery(req, res) {
         await super.updateRecord(
             req, res,
@@ -62,18 +50,6 @@ class BatteryController extends BaseController {
         );
     }
 
-    async getAllModelbatterys(req, res) {
-        await super.getAllRecords(req, res, batteryService.getAllModelbatterys, 'моделей шин');
-    }
-
-    async getModelbatteryById(req, res) {
-        await super.getRecordById(
-            req, res,
-            (id) => batteryService.getModelbatteryById(id),
-            'модель шин'
-        );
-    }
-
     async updateModelbattery(req, res) {
         await super.updateRecord(
             req, res,
@@ -108,18 +84,6 @@ class BatteryController extends BaseController {
             (data) => batteryService.createbattery(data),
             'шина',
             Schemas.createbattery
-        )
-    }
-
-    async getAllbatterys(req, res) {
-        await super.getAllRecords(req, res, batteryService.getAllbatterys, 'дисков');
-    }
-
-    async getbatteryByid(req, res) {
-        await super.getRecordById(
-            req, res,
-            (id) => batteryService.getbatteryById(id),
-            'шина'
         )
     }
 

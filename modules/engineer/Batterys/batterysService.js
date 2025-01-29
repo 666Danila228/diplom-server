@@ -44,14 +44,6 @@ class batteryService extends BaseService {
         return this.createRecord('brandbattery', { name }, 'бренд диска');
     }
 
-    async getAllBrandbattery() {
-        return super.getAllRecords('brandbattery');
-    }
-
-    async getBrandbatteryById(id) {
-        return this.getRecordById('brandbattery', id, 'Бренд дисков');
-    }
-
     async updateBrandbattery(id, name) {
         return this.updateRecord('brandbattery', id, { name }, 'Бренд диска');
     }
@@ -69,14 +61,6 @@ class batteryService extends BaseService {
     // Модели дисков
     async createModelbattery(data) {
         return this.createRecord('modelbattery', data, 'модель дисков', ['Brandbattery']);
-    }
-
-    async getAllModelbatterys() {
-        return super.getAllRecords('modelbattery');
-    }
-
-    async getModelbatteryById(id) {
-        return this.getRecordById('modelbattery', id, 'модель шин');
     }
 
     async updateModelbattery(id, data) {
@@ -98,14 +82,6 @@ class batteryService extends BaseService {
         return this.createRecord('battery', data, 'шина', ['modelbattery', 'garage']);
     }
 
-    async getAllbatterys() {
-        return super.getAllRecords('battery');
-    }
-
-    async getbatteryById(id) {
-        return this.getRecordById('battery', id, 'шина');
-    }
-
     async updatebattery(id, data) {
         return this.updateRecord('battery', id, data, 'шина', ['modelbattery', 'garage']);
     }
@@ -123,10 +99,10 @@ class batteryService extends BaseService {
         const batteryOnbattery = await prisma.batteryOnbattery.findFirst({
             where: {
                 battery_id: parseInt(batteryId),
-                status: 'IN_USE', // Проверяем только активные записи
+                status: 'IN_USE',
             },
         });
-        return !!batteryOnbattery; // Возвращает true, если шина используется
+        return !!batteryOnbattery; 
     }
 
     async batteryWriteOff(data) {

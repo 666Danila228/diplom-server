@@ -71,14 +71,31 @@ const Schemas = {
             'number.base': 'brand_id должен быть числовым',
             'any.required': 'brand_id обязателен'
         }),
-        name: Joi.string().min(3).max(25).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required().external(checkModelTireExists).messages({
+        name: Joi.string().min(3).max(25).pattern(new RegExp('^[a-zA-Z0-9 ]{3,30}$')).required().external(checkModelTireExists).messages({
             'string.base': 'Название модели должно быть строкой',
             'string.empty': 'Название модели не может быть пустым',
             'string.min': 'Название модели должно быть не менее {#limit} символов',
             'string.max': 'Название модели должно быть не больше {#limit} символов',
             'string.pattern.base': 'Название модели должно содержать только латинские буквы и цифры',
             'any.required': 'Название модели обязателен'
-        })
+        }),
+        size: Joi.string().min(9).max(15).pattern(new RegExp('^\\d{3}/\\d{2}R\\d{2}$')).required().messages({
+            'string.base': 'Размер должен быть сторокй',
+            'string.empty': 'Размер не может быть пустым',
+            'string.min': 'Размер должен быть не менее {#limit} символов',
+            'string.max': 'Размер должен быть не больше {#limit} символов',
+            'string.pattern.base': 'Размер должен соответсвовать формату XXX/XXRXX',
+            'any.required': 'Размер обязателен'
+        }),
+        estimated_mileage: Joi.number().min(0).required().messages({
+            'number.base': 'Примерный пробег должен быть числом',
+            'any.required': 'Примерный пробег обязателен'
+        }),
+        season: Joi.string().valid('WINTER', 'SUMMER', 'ALL_SEASON').required().messages({
+            'string.base': 'Сезон шины должен быть строкой',
+            'any.required': 'Сезон шины обязателен',
+            'any.only': 'Сезон шины должен быть одним из: WINTER, SUMMER, ALL_SEASON',
+        }),
     }),
 
     updateModelTireSchema: Joi.object({
@@ -103,18 +120,8 @@ const Schemas = {
             'number.base': 'model_id должно быть числом',
             'any.required': 'model_id обязателен'
         }),
-        size: Joi.string().min(9).max(15).pattern(new RegExp('^\\d{3}/\\d{2}R\\d{2}$')).required().messages({
-            'string.base': 'Размер должен быть сторокй',
-            'string.empty': 'Размер не может быть пустым',
-            'string.min': 'Размер должен быть не менее {#limit} символов',
-            'string.max': 'Размер должен быть не больше {#limit} символов',
-            'string.pattern.base': 'Размер должен соответсвовать формату XXX/XXRXX',
-            'any.required': 'Размер обязателен'
-        }),
-        estimated_mileage: Joi.number().min(0).required().messages({
-            'number.base': 'Примерный пробег должен быть числом',
-            'any.required': 'Примерный пробег обязателен'
-        }),
+        
+        
         remaining_mileage: Joi.number().min(0).required().messages({
             'number.base': 'Факический пробег должен быть числом',
             'any.required': 'Факический пробег обязателен'

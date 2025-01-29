@@ -506,7 +506,7 @@ model ModelCoolant {
   freezing_point  Float // Температура замерзания (в градусах Цельсия)
   boiling_point   Float // Температура кипения (в градусах Цельсия)
   composition     String // Состав тосола (например, этиленгликоль, пропиленгликоль)
-  expiration_date DateTime // Срок годности
+  expiration_date Int // Срок годности в месяцах
   deletedAt       DateTime?
 
   brand    BrandCoolant @relation(fields: [brand_id], references: [id]) // Связь с брендом

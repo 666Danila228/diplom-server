@@ -13,17 +13,6 @@ class CarController extends BaseController {
         );
     }
 
-    async getAllBrandCars(req, res) {
-        await super.getAllRecords(req, res, CarService.getAllBrandCar, 'брендов машин');
-    }
-
-    async getBrandCarById(req, res) {
-        await super.getRecordById(
-            req, res,
-            (id) => CarService.getBrandCarById(id),
-            'Бренд машин'
-        );
-    }
 
     async updateBrandCar(req, res) {
         await super.updateRecord(
@@ -59,18 +48,6 @@ class CarController extends BaseController {
             (data) => CarService.createModelCar(data),
             'модель машин',
             Schemas.createModelCar
-        );
-    }
-
-    async getAllModelCars(req, res) {
-        await super.getAllRecords(req, res, CarService.getAllModelCar, 'моделей машин');
-    }
-
-    async getModelCarById(req, res) {
-        await super.getRecordById(
-            req, res,
-            (id) => CarService.getModelCarById(id),
-            'модель машин'
         );
     }
 
@@ -111,19 +88,6 @@ class CarController extends BaseController {
             'Тип машины',
             Schemas.createTypeCar
         );
-    }
-
-    async getAllTypeCar(req, res) {
-        await super.getAllRecords(req, res, CarService.getAllTypeCar, 'Типы машин');
-    }
-
-    async getTypeCarById(req, res) {
-        const { id } = req.params;
-        await super.getRecordById(
-            req, res,
-            () => CarService.getTypeCarById(id),
-            'Тип машины'
-        )
     }
 
     async updateTypeCar(req, res) {
@@ -169,19 +133,6 @@ class CarController extends BaseController {
             () => CarService.createCar(data),
             'машина',
             Schemas.createCar
-        );
-    }
-
-    async getAllCars(req, res) {
-        await super.getAllRecords(req, res, CarService.getAllCars, 'Машины');
-    }
-
-    async getCarById(req, res) {
-        const { id } = req.params;
-        await super.getRecordById(
-            req, res,
-            () => CarService.getCarById(id),
-            'машина'
         );
     }
 

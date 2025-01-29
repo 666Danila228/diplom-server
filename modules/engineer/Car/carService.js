@@ -9,14 +9,6 @@ class CarService extends BaseService {
         return this.createRecord('brandCar', { name }, 'бренд машины');
     }
 
-    async getAllBrandCar() {
-        return super.getAllRecords('brandCar');
-    }
-
-    async getBrandCarById(id) {
-        return this.getRecordById('brandCar', id, 'Бренд машины');
-    }
-
     async updateBrandCar(id, name) {
         return this.updateRecord('brandCar', id, { name }, 'Бренд машины');
     }
@@ -27,14 +19,6 @@ class CarService extends BaseService {
 
     async createModelCar(data) {
         return this.createRecord('modelCar', data, 'Модель машины', ['brandCar']);
-    }
-
-    async getAllModelCar() {
-        return super.getAllRecords('modelCar');
-    }
-
-    async getModelCarById(id) {
-        return this.getRecordById('modelCar', id, 'модель машины');
     }
 
     async updateModelCar(id, data) {
@@ -49,14 +33,6 @@ class CarService extends BaseService {
         return this.createRecord('typeCar', data, 'тип машины');
     }
 
-    async getAllTypeCar() {
-        return super.getAllRecords('typeCar');
-    }
-
-    async getTypeCarById(id) {
-        return this.getRecordById('typeCar', id, 'тип машины');
-    }
-
     async updateTypeCar(id, data) {
         return this.updateRecord('typeCar', id, data, 'тип машины');
     }
@@ -69,14 +45,6 @@ class CarService extends BaseService {
         const car = await this.createRecord('car', data, 'машина', ['service', 'Garage', 'TypeCar', 'ModelCar', 'DrivingCategory']);
         await TOService.scheduleInitialTO(car.id, car.type_car_id);
         return car;
-    }
-
-    async getAllCars() {
-        return super.getAllRecords('car');
-    }
-
-    async getCarById(id) {
-        return this.getRecordById('car', id, 'машина');
     }
 
     async updateCar(id, data) {

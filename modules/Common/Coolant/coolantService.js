@@ -29,28 +29,37 @@ class CoolantsService extends BaseService {
 
         return {
             ...modelCoolant,
-            brandName: modelCoolant.brand.name, // Используем brandName
+            brandName: modelCoolant.brand.name,
         };
     }
 
 
-    // тасолаа
+    // тасола
     async getAllCoolants() {
         const coolants = await super.getAllRecords('Coolant', {
             include: {
                 ModelCoolant: {
                     include: {
-                        brand: true, // Включаем бренд
+                        brand: true,
                     },
                 },
             },
         });
-    
+
         return coolants.map((coolant) => ({
-            ...coolant,
+            id: coolant.id,
+            model_id: coolant.model_id,
+            volume: coolant.volume,
+            garage_id: coolant.garage_id,
+            created_at: coolant.created_at,
+            deletedAt: coolant.deletedAt,
             modelName: coolant.ModelCoolant?.name,
             brandName: coolant.ModelCoolant?.brand?.name,
-            ModelCoolant: undefined, 
+            type: coolant.ModelCoolant?.type,
+            freezing_point: coolant.ModelCoolant?.freezing_point,
+            boiling_point: coolant.ModelCoolant?.boiling_point,
+            composition: coolant.ModelCoolant?.composition,
+            expiration_date: coolant.ModelCoolant?.expiration_date,
         }));
     }
 
@@ -64,10 +73,19 @@ class CoolantsService extends BaseService {
         });
 
         return {
-            ...coolant,
+            id: coolant.id,
+            model_id: coolant.model_id,
+            volume: coolant.volume,
+            garage_id: coolant.garage_id,
+            created_at: coolant.created_at,
+            deletedAt: coolant.deletedAt,
             modelName: coolant.ModelCoolant.name,
             brandName: coolant.ModelCoolant.brand.name,
-            ModelCoolant: undefined,
+            type: coolant.ModelCoolant.type,
+            freezing_point: coolant.ModelCoolant.freezing_point,
+            boiling_point: coolant.ModelCoolant.boiling_point,
+            composition: coolant.ModelCoolant.composition,
+            expiration_date: coolant.ModelCoolant.expiration_date,
         };
     }
 

@@ -10,32 +10,23 @@ class AuthController extends BaseController {
         upload.single('avatar')(req, res, async (err) => {
             if (err) {
                 console.error('Ошибка при загрузке файла:', err.message); // Логируем ошибку
-                return res.status(400).json({ error: 'Ошибка при загрузке файла: ' + err.message });
+
             }
-    
-            try {
-                const data = req.body;
-                let avatarUrl = 'uploads/users/default-avatar.jpg';
-    
-                if (req.file) {
-                    avatarUrl = req.file.path;
-                }
-    
-                const userData = {
-                    ...data,
-                    avatar: avatarUrl,
-                };
-    
-                await super.createRecord(req, res, () => AuthService.createUser(userData), 'пользователь', registerSchema);
-            } catch (error) {
-                console.error('Ошибка при регистрации:', error);
-    
-                if (req.file) {
-                    fs.unlinkSync(req.file.path);
-                }
-    
-                res.status(500).json({ error: error.message });
+
+            const data = req.body;
+            let avatarUrl = 'uploads/users/default-avatar.jpg';
+
+            if (req.file) {
+                avatarUrl = req.file.path;
             }
+
+            const userData = {
+                ...data,
+                role_id: parseInt(data.role_id, 10),
+                avatar: avatarUrl,
+            };
+
+            await super.createRecord(req, res, () => AuthService.createUser(userData), 'пользователь', registerSchema);
         });
     }
 

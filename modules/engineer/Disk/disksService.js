@@ -44,14 +44,6 @@ class DiskService extends BaseService {
         return this.createRecord('brandDisk', { name }, 'бренд диска');
     }
 
-    async getAllBrandDisk() {
-        return super.getAllRecords('brandDisk');
-    }
-
-    async getBrandDiskById(id) {
-        return this.getRecordById('brandDisk', id, 'Бренд дисков');
-    }
-
     async updateBrandDisk(id, name) {
         return this.updateRecord('brandDisk', id, { name }, 'Бренд диска');
     }
@@ -69,14 +61,6 @@ class DiskService extends BaseService {
     // Модели дисков
     async createModelDisk(data) {
         return this.createRecord('modelDisk', data, 'модель дисков', ['BrandDisk']);
-    }
-
-    async getAllModelDisks() {
-        return super.getAllRecords('modelDisk');
-    }
-
-    async getModelDiskById(id) {
-        return this.getRecordById('modelDisk', id, 'модель шин');
     }
 
     async updateModelDisk(id, data) {
@@ -98,14 +82,6 @@ class DiskService extends BaseService {
         return this.createRecord('Disk', data, 'шина', ['modelDisk', 'garage']);
     }
 
-    async getAllDisks() {
-        return super.getAllRecords('Disk');
-    }
-
-    async getDiskById(id) {
-        return this.getRecordById('Disk', id, 'шина');
-    }
-
     async updateDisk(id, data) {
         return this.updateRecord('Disk', id, data, 'шина', ['modelDisk', 'garage']);
     }
@@ -123,10 +99,10 @@ class DiskService extends BaseService {
         const DiskOnDisk = await prisma.DiskOnDisk.findFirst({
             where: {
                 Disk_id: parseInt(DiskId),
-                status: 'IN_USE', // Проверяем только активные записи
+                status: 'IN_USE', 
             },
         });
-        return !!DiskOnDisk; // Возвращает true, если шина используется
+        return !!DiskOnDisk;
     }
 
     async DiskWriteOff(data) {
