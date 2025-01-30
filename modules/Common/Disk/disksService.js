@@ -3,8 +3,8 @@ import prisma from '../../../prisma/prismaClient.js';
 
 class DiskService extends BaseService {
 
-    async getAllBrandDisk() {
-        return super.getAllRecords('brandDisk');
+    async getAllBrandDisk(options = {}) {
+        return super.getAllRecords('brandDisk', options);
     }
 
     async getBrandDiskById(id) {
@@ -13,8 +13,8 @@ class DiskService extends BaseService {
 
     // Модели дисков
     
-    async getAllModelDisks() {
-        return super.getAllRecords('modelDisk');
+    async getAllModelDisks(options = {}) {
+        return super.getAllRecords('modelDisk', options);
     }
 
     async getModelDiskById(id) {
@@ -23,8 +23,8 @@ class DiskService extends BaseService {
 
     // Диск
 
-    async getAllDisks() {
-        return super.getAllRecords('Disk');
+    async getAllDisks(options = {}) {
+        return super.getAllRecords('Disk', options);
     }
 
     async getDiskById(id) {

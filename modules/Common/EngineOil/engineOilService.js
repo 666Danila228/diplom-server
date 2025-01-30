@@ -179,6 +179,7 @@ class EngineOilsService extends BaseService {
             brandName: engineOil.ModelEngineOil?.brand?.name,
             garageName: engineOil.Garage?.name,
             type: mapOilType(engineOil.ModelEngineOil.type),
+            viscosity: engineOil.ModelEngineOil?.viscosity,
             ModelEngineOil: undefined,
             Garage: undefined,
         }));

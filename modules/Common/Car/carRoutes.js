@@ -17,7 +17,7 @@ router.get('/typeCar/:id', CarController.getTypeCarById);
 
 
 router.get('/cars', CarController.getAllCars);
-router.get('/car/:id', CarController.getCarById);
+router.get('/с/:id', CarController.getCarById);
 
 
 export default router;

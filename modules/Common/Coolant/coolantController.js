@@ -31,7 +31,25 @@ class CoolantController extends BaseController {
 
     // тасолаа
     async getAllCoolants(req, res) {
-        await super.getAllRecords(req, res, CoolantsService.getAllCoolants, 'тасола');
+        try {
+            const { where, orderBy, include, skip, take } = req.query;
+    
+            const options = {
+                where: where ? JSON.parse(where) : undefined,
+                orderBy: orderBy ? JSON.parse(orderBy) : undefined,
+                include: include ? JSON.parse(include) : undefined,
+                skip: skip ? parseInt(skip) : undefined,
+                take: take ? parseInt(take) : undefined,
+            };
+    
+            console.log('Options:', options);
+    
+            const coolants = await CoolantsService.getAllCoolants(options);
+            res.status(200).json({ message: "Список Тосолов", records: coolants });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: "Ошибка при получении списка тосолов", error: error.message });
+        }
     }
 
     async getCoolantByid(req, res) {
